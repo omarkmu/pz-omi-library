@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+PATH_PLURAL=$(dirname "$0")/../Contents/mods/OmiLibrary/42.13/media/lua/shared/OmiLibrary/Definition/Generated/CLDRPluralData.lua
+PATH_DATETIME=$(dirname "$0")/../Contents/mods/OmiLibrary/42.13/media/lua/shared/OmiLibrary/Definition/Generated/CLDRDateTimeData.lua
+
+pz-extract-cldr plurals -o "$PATH_PLURAL"
+pz-extract-cldr datetime -o "$PATH_DATETIME"

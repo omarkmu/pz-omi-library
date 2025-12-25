@@ -1,0 +1,18 @@
+---Test configuration file.
+
+return {
+    _all = {
+        verbose = true,
+        helper = './tests/helpers/setup.lua',
+        ROOT = { 'tests' },
+        lpath = table.concat({
+            './Contents/mods/OmiLibrary/42.13/media/lua/shared/?.lua',
+            './Contents/mods/OmiLibrary/42.13/media/lua/client/?.lua',
+            './Contents/mods/OmiLibrary/42.13/media/lua/server/?.lua',
+            './tests/?.lua',
+        }, ';'),
+    },
+    cov = {
+        coverage = true,
+    },
+}

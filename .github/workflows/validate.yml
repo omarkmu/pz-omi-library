@@ -1,0 +1,54 @@
+name: Validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Checkout zombusted
+        uses: actions/checkout@v4
+        with:
+          repository: omarkmu/zombusted
+          path: zombusted
+      - name: Install Lua
+        # see https://github.com/leafo/gh-actions-lua/issues/57
+        uses: lewis6991/gh-actions-lua@01aab24c4de9555717b685f9b142a2abbe12ef14
+        with: 
+          luaVersion: '5.2'
+      - name: Install LuaRocks
+        uses: leafo/gh-actions-luarocks@v4
+        with:
+          luaRocksVersion: "3.12.0"
+      - name: Install zombusted
+        run: |
+          cd zombusted
+          luarocks --local make ./zombusted-scm-0.rockspec
+      - name: Run busted
+        run: busted
+  check-translations:
+    name: Translation check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Checkout pz-utils
+        uses: actions/checkout@v4
+        with:
+          repository: omarkmu/pz-utils
+          path: pz-utils
+      - name: Set up Node
+        uses: actions/setup-node@v6
+      - name: Install pz-utils
+        run: npm install ./pz-utils
+      - name: Run analyzer
+        run: |
+          cd pz-utils
+          npm run analyze -- ..

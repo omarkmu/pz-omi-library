@@ -1,0 +1,17 @@
+version=1
+id=3652613566
+title=OmiLibrary
+description=[h2]Description[/h2]
+description=This is a library mod for use by myself or any other modders who may want to include it as a dependency.
+description=[b]It has no effect on its own.[/b]
+description=
+description=For details about the provided utilities, see the [url=https://github.com/omarkmu/pz-omi-library]GitHub repository.[/url]
+description=If you wish to use this library, keep in mind that as of now the public interface may change at any time depending on the needs of my other mods.
+description=
+description=[h2]Permissions[/h2]
+description=This mod uses the [url=https://theindiestone.com/forums/index.php?/topic/2530-mod-permissions/#comment-36478]"Ask for permission" policy.[/url]
+description=
+description=You may [b]not[/b] reupload this mod or include it directly in modpacks. If you need to add something, [url=https://github.com/omarkmu/pz-omi-library]contribute![/url]
+description=The code and associated documentation is licensed under the [url=https://github.com/omarkmu/pz-omi-library/blob/main/LICENSE]MIT License.[/url]
+tags=Build 42;Framework;Misc
+visibility=public
