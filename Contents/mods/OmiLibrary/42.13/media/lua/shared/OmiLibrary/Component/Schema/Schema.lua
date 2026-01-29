@@ -3,6 +3,7 @@
 ---@namespace omi
 
 local core = require 'OmiLibrary/Module/Utils'
+local json = require 'OmiLibrary/Module/JSON'
 local Field = require 'OmiLibrary/Component/Schema/Field'
 
 
@@ -105,12 +106,12 @@ end
 
 ---Reads a table against the schema from a .json file.
 ---The schema will be read with the default options.
----@param fileReadOptions Args.ReadSchemaFile | string
+---@param fileReadOptions Args.ReadJSON | string
 ---@param schemaReadOptions Args.ReadSchema.Partial?
 ---@return table? result
 ---@return string? error
 function Schema:readFile(fileReadOptions, schemaReadOptions)
-    local decoded, err = Schema.__module.read(fileReadOptions)
+    local decoded, err = json.readObject(fileReadOptions)
     if not decoded then
         return nil, err
     end

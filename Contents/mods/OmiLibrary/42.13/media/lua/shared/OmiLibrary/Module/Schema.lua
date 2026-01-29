@@ -50,11 +50,6 @@ schema.StringEnumField = require 'OmiLibrary/Component/Schema/StringEnumField'
 schema.StringField = require 'OmiLibrary/Component/Schema/StringField'
 
 
----Reference to the schema module.
----@private
-Schema.__module = schema
-
-
 ---Helper which creates an array configuration field.
 ---@param options Args.ArrayField
 ---@return schema.ArrayField
@@ -148,52 +143,6 @@ function schema.object(options)
     return schema.ObjectField:new(options)
 end
 
----Reads a JSON object from a configuration file.
----@param options Args.ReadSchemaFile | string
----@return table? result
----@return string? error
-function schema.read(options)
-    if type(options) == 'string' then
-        options = { filename = options }
-    end
-
-    local file = options.reader
-    if not file then
-        local filename = tostring(options.filename)
-        pcall(function()
-            file = getFileReader(filename, options.create ~= false)
-        end)
-
-        if not file then
-            return nil, 'could not open file ' .. filename
-        end
-    end
-
-    local content = {}
-    while file:ready() do
-        content[#content + 1] = file:readLine()
-    end
-
-    file:close()
-
-    local encoded = table.concat(content):trim()
-    if #encoded == 0 then
-        return {}
-    end
-
-    local success, decoded = json.tryDecode(encoded)
-    if type(decoded) ~= 'table' then
-        if success then
-            return nil, 'invalid file content'
-        end
-
-        ---@cast decoded string
-        return nil, decoded
-    end
-
-    return decoded
-end
-
 ---Helper which creates a set configuration field.
 ---@param options Args.SetField
 ---@return schema.SetField
@@ -225,17 +174,12 @@ return schema
 
 --#region Type Definitions
 
----@class Args.ReadSchemaFile
----@field filename? string The filename of the configuration file. This assumes the file is in the Lua cache directory.
----@field reader? BufferedReader The reader for the file containing the configuration. If present, `filename` will be ignored.
----@field create? boolean Flag for whether the file should be created if not found. Defaults to `true`.
+---@class Args.ReadSchema : Args.ReadSchema.Partial
+---@field source table The source table to read.
 
 ---@class Args.ReadSchema.Partial
 ---@field dest? table The destination table for options.
 ---@field skipMissing? boolean If `true`, missing fields will not be included as defaults.
-
----@class Args.ReadSchema : Args.ReadSchema.Partial
----@field source table The source table to read.
 
 ---@class Args.ReadSchemaField
 ---@field schema Schema The parent schema of the field.
