@@ -91,7 +91,9 @@ function Generator:_generateContent(form)
     self.form = nil
 
     local first = form.listbox.items[1] or {}
-    form:switchPage(first.item)
+    if first.item then
+        form:switchPage(first.item)
+    end
 end
 
 ---Generates a page for a form.
@@ -705,13 +707,15 @@ return Generator
 
 --#region Type Definitions
 
----@class Args.FormGenerator.Partial
+---@class Args.FormGenerator.FromFile
 ---@field prefix? string The prefix to use for translation string IDs. Defaults to `OmiLibrary.form-default`.
 ---@field title? string The text to use for the form title. Defaults to the translation from `prefix` + `'_title'`.
----@field versionKey? string A top-level field key that stores the version field, to ignore in the form. Defaults to `'VERSION'`.
----@field rules? table<string, forms.Rules> A mapping of schema property keys to associated rules.
 ---@field closeOnSave? boolean If `true`, the form will immediately close after saving. Defaults to `true`.
 ---@field destroyOnClose? boolean If `true`, the form will immediately be destroyed when closing. Defaults to `true`.
+
+---@class Args.FormGenerator.Partial : Args.FormGenerator.FromFile
+---@field versionKey? string A top-level field key that stores the version field, to ignore in the form. Defaults to `'VERSION'`.
+---@field rules? table<string, forms.Rules> A mapping of schema property keys to associated rules.
 
 ---@class Args.FormGenerator : Args.FormGenerator.Partial
 ---@field schema Schema The schema to use for the generated form.

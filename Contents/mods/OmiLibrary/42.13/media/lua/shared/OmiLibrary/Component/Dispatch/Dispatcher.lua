@@ -98,7 +98,7 @@ function Dispatcher:connect()
             self:_onReceive(false, module, command, args, player)
         end
 
-        Events.OnClientCommand.Add(self._serverListener)
+        Events.OnClientCommand.Add(self._serverListener --[[@as function]])
     end
 
     -- server → client

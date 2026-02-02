@@ -11,7 +11,7 @@ local Mixin = require 'OmiLibrary/Module/UI/Mixin'
 ---@field backgroundColor ColorTableRGBA<number> The background color to use for the panel.
 ---@field protected clip boolean If `true`, the panel will draw a stencil rect around its contents.
 ---@field protected clipPrerender boolean If `true`, the stencil rect will be applied during prerender.
----@field protected savedStencil? number[] The saved stencil to be repainted.
+---@field protected savedStencil? [number, number, number, number] The saved stencil to be repainted.
 ---@field protected doOriginalPrerender boolean If `true`, `ISPanelJoypad.prerender` will be called during prerender.
 ---@field protected doOriginalRender boolean If `true`, `ISPanelJoypad.render` will be called during render.
 ---@field protected doRepaintStencil boolean If `true`, the stencil rect will be repainted after rendering.

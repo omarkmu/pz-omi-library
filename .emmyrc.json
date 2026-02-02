@@ -1,5 +1,5 @@
 {
     "runtime.version": "Lua5.1",
     "runtime.requireLikeFunction": ["reload_module"],
-    "diagnostics.disable": ["unnecessary-if"]
+    "diagnostics.disable": ["unnecessary-if", "invert-if"]
 }

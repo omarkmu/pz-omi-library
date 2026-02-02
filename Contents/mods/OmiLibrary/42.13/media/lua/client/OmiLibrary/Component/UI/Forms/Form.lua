@@ -1640,8 +1640,18 @@ return Form
 ---@class Args.FormCallback.Update : Args.FormCallback
 
 
----@class forms.Rules
+---@class forms.Rules : forms.Rules.FromFile
 ---@field children? table<string, forms.Rules> Associates child field keys to rules.
+---@field getItemDisplay? (fun(args: Args.FormCallback.Item): string?) Invoked to retrieve the display text for an object array item.
+---@field onActionClick? FormCallback.ButtonClick Invoked when a secondary action button is clicked.
+---@field onInfoClick? FormCallback.ButtonClick Invoked when an info button is clicked.
+---@field getCheckboxOptions? (fun(args: Args.FormCallback): Checkbox.ItemOrString[]) Invoked to retrieve checkbox options for a set field.
+---@field getEnumOptions? (fun(args: Args.FormCallback): Dropdown.OptionOrString[]) Invoked to retrieve options for a enum field.
+---@field onChange? (fun(args: Args.FormCallback.Item)) Invoked when a field or its children change.
+---@field init? (fun(args: Args.FormCallback.Item)) Invoked to initialize a field.
+---@field createItem? (fun(args: Args.FormCallback.CreateItem): table) Invoked to create a new object array item.
+
+---@class forms.Rules.FromFile
 ---@field hidden? boolean If `true`, the field will not be included in the form.
 ---@field noLabel? boolean If `true`, a label will not be created for the field.
 ---@field hideControl? boolean If `true`, the created control will not be visible in the form.
@@ -1671,14 +1681,6 @@ return Form
 ---@field inverseToggleFields? forms.Path[] Array of paths to set to enabled/disabled based on the value of the checkbox. If the checkbox is checked, the fields will be unavailable.
 ---@field togglePageFields? boolean If `true`, this will act as though all elements on the page were included in `toggleFields`.
 ---@field inverseTogglePageFields? boolean If `true`, this will act as though all elements on the page were included in `inverseToggleFields`.
----@field getItemDisplay? (fun(args: Args.FormCallback.Item): string?) Invoked to retrieve the display text for an object array item.
----@field onActionClick? FormCallback.ButtonClick Invoked when a secondary action button is clicked.
----@field onInfoClick? FormCallback.ButtonClick Invoked when an info button is clicked.
----@field getCheckboxOptions? (fun(args: Args.FormCallback): Checkbox.ItemOrString[]) Invoked to retrieve checkbox options for a set field.
----@field getEnumOptions? (fun(args: Args.FormCallback): Dropdown.OptionOrString[]) Invoked to retrieve options for a enum field.
----@field onChange? (fun(args: Args.FormCallback.Item)) Invoked when a field or its children change.
----@field init? (fun(args: Args.FormCallback.Item)) Invoked to initialize a field.
----@field createItem? (fun(args: Args.FormCallback.CreateItem): table) Invoked to create a new object array item.
 ---@field keyPlaceholder? string The string to use for the key entry placeholder of a map entry.
 ---@field valuePlaceholder? string The string to use for the value entry placeholder of a map entry.
 

@@ -165,9 +165,9 @@ function Roller:_applyAdvantage(expr, adv)
     end
 
     -- copy the left side of the tree down, get a clone of the leftmost node
-    local parent = root
-    local child = root
-    while true do
+    local parent = root ---@type AST.Expression?
+    local child = root ---@type AST.Expression?
+    while parent do
         if parent.type == 'BinOp' then
             ---@cast parent AST.BinOp
             parent.left = core.copy(parent.left)
@@ -187,7 +187,7 @@ function Roller:_applyAdvantage(expr, adv)
         parent = child
     end
 
-    if child.type ~= 'Dice' then
+    if not child or child.type ~= 'Dice' then
         return root
     end
 

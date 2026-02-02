@@ -142,7 +142,7 @@ end
 ---@param args InitArgs.Dropdown
 ---@return Dropdown
 function UI.dropdown(args)
-    local options = args.options or {}
+    local options = args.options or {} --[[@as Dropdown.OptionOrString[] ]]
 
     local dropdown = UI.Dropdown:new(args)
     dropdown:initialise()
@@ -192,7 +192,7 @@ end
 ---Gets the position for the center of the screen given a UI element's width and height.
 ---@param width number
 ---@param height number
----@param playerNum number?
+---@param playerNum integer?
 ---@return number
 ---@return number
 function UI.getScreenCenter(width, height, playerNum)
@@ -309,7 +309,7 @@ function UI.listBox(args)
     listbox:initialise()
     listbox:instantiate()
 
-    local items = args.items or {}
+    local items = args.items or {} --[[@as (string | InitArgs.ListBoxItem)[] ]]
     for i = 1, #items do
         local itemArgs = items[i]
         if type(itemArgs) ~= 'table' then

@@ -251,7 +251,7 @@ end
 ---@param table T?
 ---@return T - ?
 function core.deepcopy(table)
-    return core._deepcopy(table or {}, {})
+    return core._deepcopy((table or {}) --[[@as table]], {})
 end
 
 ---Returns an entry table with the specified key and value.

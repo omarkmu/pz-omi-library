@@ -120,7 +120,7 @@ function Scheduler:_connectOnTick()
     end
 
     self._onTickListener = function() self:_update(false) end
-    Events.OnTickEvenPaused.Add(self._onTickListener)
+    Events.OnTickEvenPaused.Add(self._onTickListener --[[@as function]])
 end
 
 ---Disconnects the listener for `OnTickEvenPaused`.
