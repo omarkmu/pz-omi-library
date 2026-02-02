@@ -46,21 +46,29 @@ L10N._bundles = {}
 ---@readonly
 L10N._parser = L10N.FluentParser:new()
 
----Associates vanilla translation categories to irregular prefixes.
----@type table<VanillaTranslationCategory, string?>
+---Associates irregular translation ID prefixes to vanilla translation categories.
+---@type table<string, VanillaTranslationCategory>
 ---@private
-L10N._translationPrefixes = {
-    Recipes = '',
-    RecipeGroups = 'RecipeGroup_',
-    Items = '',
-    Moveables = '',
-    MakeUp = 'MakeUp',
-    Recorded_Media = 'RM_',
-    SurvivorNames = '', -- contains both SurvivorName_ and SurvivorSurname_
-    Fluids = 'Fluid_',
-    Entity = 'EC_',
-    RadioData = 'RD_',
-    BodyParts = 'BODYPART_',
+L10N._translationCategories = {
+    EC = 'Entity',
+    RM = 'Recorded_Media',
+    RD = 'RadioData',
+    Fluid = 'Fluids',
+    RecipeGroup = 'RecipeGroups',
+    MakeUpCategory = 'MakeUp',
+    MakeUpType = 'MakeUp',
+    SurvivorName = 'SurvivorNames',
+    SurvivorSurname = 'SurvivorNames',
+    BODYPART = 'BodyParts',
+}
+
+---Set of vanilla translation categories which don't use a prefix.
+---@type SetTable<VanillaTranslationCategory>
+---@private
+L10N._emptyCategories = {
+    Recipes = true,
+    Items = true,
+    Moveables = true,
 }
 
 ---Associates vanilla translation categories to translation maps from `Translator`.
@@ -342,25 +350,20 @@ end
 ---Sets the value of a vanilla translation.
 ---This does not (and cannot) change existing usages of the string; it only affects future calls to `getText`.
 ---
----For most translation categories, the appropriate prefix is automatically added.
----i.e., to add `UI_X`, `category` should be `UI` and `key` should be `X`.
----
----For `SurvivorNames`, the usual prefix must be included in the key (to differentiate between names and surnames).
----@param category VanillaTranslationCategory The type of the translation.
+---String IDs for recipes, items, and moveables should be prefixed with `Recipe_`, `Item_`, or `Moveable_`, respectively;
+---these are used for detecting the translation type and will be removed when setting the value.
 ---@param key string The translation key.
 ---@param value string The value to set.
 ---@return boolean success
-function L10N.setText(category, key, value)
-    local prefix = L10N._translationPrefixes[category] or (category .. '_')
-    local map = L10N._vanillaTranslationMaps[category]
+function L10N.setText(key, value)
+    local map, id = L10N._getTranslationMap(key)
     if not map then
         return false
     end
 
-    map:put(prefix .. key, value)
+    map:put(id, value)
     return true
 end
-
 
 ---Gets the bundle to use and the message ID from a given ID.
 ---@param id string
@@ -383,6 +386,34 @@ function L10N._getBundleAndId(id, defaultBundle)
     end
 
     return bundle, id
+end
+
+---Gets the vanilla translation map to use for a string ID.
+---@param id string
+---@return HashMap<string, string>?
+---@return string id
+function L10N._getTranslationMap(id)
+    local underscore = id:find('_', 1, true)
+    if not underscore then
+        return nil, id
+    end
+
+    local catId = id:sub(1, underscore - 1)
+    local category = L10N._translationCategories[catId]
+    if not category then
+        category = catId --[[@as VanillaTranslationCategory]]
+    end
+
+    local map = L10N._vanillaTranslationMaps[category]
+    if not map then
+        return nil, id
+    end
+
+    if L10N._emptyCategories[category] then
+        id = id:sub(underscore + 1)
+    end
+
+    return map, id
 end
 
 ---Logs a warning for errors that occurred while formatting a message.
