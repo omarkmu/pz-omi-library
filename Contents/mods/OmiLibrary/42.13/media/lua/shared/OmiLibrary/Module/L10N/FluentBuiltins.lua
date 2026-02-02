@@ -166,8 +166,10 @@ function FUNCTION.GETTEXT(args, opts)
     end
 
     local unwrapped = {}
-    for i = 1, #args do
-        unwrapped[i] = tostring(args[i])
+    for i = 2, #args do
+        unwrapped[i - 1] = tostring(args[i])
+
+        -- getText only supports up to 4 substitution variables
         if i == 5 then
             break
         end
