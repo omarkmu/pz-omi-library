@@ -1658,8 +1658,8 @@ return Form
 ---@field noReorderButtons? boolean If `true`, reorder buttons will not be included for a basic list control.
 ---@field prefix? string The translation prefix to use for the field.
 ---@field childPrefix? string The translation prefix to use for all child fields.
----@field paddingTop? number The padding to add above the field's label.
----@field paddingBottom? number The padding to add below the field's control.
+---@field padTop? number The padding to add above the field's label.
+---@field padBottom? number The padding to add below the field's control.
 ---@field tooltip? string The tooltip to use for the control and label.
 ---@field action? string The text to use for a secondary action button that displays alongside the field.
 ---@field actionTooltip? string The tooltip to use for a secondary action button.
