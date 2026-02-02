@@ -23,7 +23,7 @@ function configuration.new(options)
         _filename = options.filename,
         _modDataKey = options.modDataKey,
         _schema = options.schema,
-        _pretty = core.default(options.pretty, getDebug()),
+        _pretty = options.pretty ~= false,
         _log = options.logger,
         _callbacks = {
             init = options.init,
