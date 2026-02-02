@@ -111,7 +111,7 @@ end
 ---@return table? result
 ---@return string? error
 function Schema:readFile(fileReadOptions, schemaReadOptions)
-    local decoded, err = json.readObject(fileReadOptions)
+    local decoded, err = json.tryReadObject(fileReadOptions)
     if not decoded then
         return nil, err
     end
@@ -177,12 +177,14 @@ return Schema
 
 --#region Type Definitions
 
----@class Args.Schema
----@field properties table<string, schema.Field> The schema properties.
+---@class Args.Schema.Partial
 ---@field transforms? Schema.Callback.Transform[] List of transforms to apply to source data.
----@field form? Args.FormGenerator.Partial The form generator definition.
 ---@field onRead? Schema.Callback Invoked after reading a table against the schema.
 ---@field sanitize? Schema.Callback Invoked to sanitize values to prepare for writing.
+
+---@class Args.Schema : Args.Schema.Partial
+---@field properties table<string, schema.Field> The schema properties.
+---@field form? Args.FormGenerator.Partial The form generator definition.
 
 
 ---@class Schema.Callbacks
