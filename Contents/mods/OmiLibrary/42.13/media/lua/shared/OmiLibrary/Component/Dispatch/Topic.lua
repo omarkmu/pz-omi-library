@@ -90,7 +90,9 @@ function Topic:onClientSend(req)
         self._callbacks.onSend(req, req.args)
     end
 
-    if self._callbacks.onClientSend then
+    if self._callbacks.onSingleplayerSend and req:isSingleplayer() then
+        self._callbacks.onSingleplayerSend(req, req.args)
+    elseif self._callbacks.onClientSend then
         self._callbacks.onClientSend(req, req.args)
     end
 end
@@ -114,7 +116,9 @@ function Topic:onServerSend(req)
         self._callbacks.onSend(req, req.args)
     end
 
-    if self._callbacks.onServerSend then
+    if self._callbacks.onSingleplayerSend and req:isSingleplayer() then
+        self._callbacks.onSingleplayerSend(req, req.args)
+    elseif self._callbacks.onServerSend then
         self._callbacks.onServerSend(req, req.args)
     end
 end
@@ -181,6 +185,17 @@ end
 ---@return Topic
 function Topic:setOnServerValidate(callback)
     self._callbacks.onServerValidate = callback
+    return self
+end
+
+---Sets a function to be called when a request is about to be sent in singleplayer.
+---This can be used to transform the request or send it directly.
+---
+---If the singleplayer callback is called, the server- or client-specific callback will not be called.
+---@param callback dispatch.Callback.OnSend?
+---@return Topic
+function Topic:setOnSingleplayerSend(callback)
+    self._callbacks.onSingleplayerSend = callback
     return self
 end
 
@@ -370,6 +385,7 @@ function Topic:new(options)
     this:setOnServerSend(options.onServerSend)
     this:setOnServerReceive(options.onServerReceive)
     this:setOnServerValidate(options.onServerValidate)
+    this:setOnSingleplayerSend(options.onSingleplayerSend)
     this:setOnStringifyArgs(options.onStringifyArgs)
     this:setOnStringifyClientArgs(options.onStringifyClientArgs)
     this:setOnStringifyServerArgs(options.onStringifyServerArgs)
@@ -417,6 +433,7 @@ return Topic
 ---@field onServerReceive? dispatch.Callback.OnServerReceive Called when a request from the client is received on the server.
 ---@field onServerSend? dispatch.Callback.OnServerSend Called when a request is about to be sent on the server.
 ---@field onServerValidate? dispatch.Callback.OnValidate Called to validate an incoming request on the server.
+---@field onSingleplayerSend? dispatch.Callback.OnSend Called when a request is about to be sent on singleplayer. If the singleplayer callback is called, the server- or client-specific callback will not be called.
 ---@field onValidate? dispatch.Callback.OnValidate Called to validate incoming requests on the server and outgoing requests on the client.
 
 --#endregion

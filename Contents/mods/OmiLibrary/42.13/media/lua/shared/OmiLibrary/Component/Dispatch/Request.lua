@@ -8,6 +8,7 @@ local isempty = table.isempty
 local format = string.format
 local getTimestampMs = getTimestampMs
 
+local IS_SINGLEPLAYER = not isClient() and not isServer()
 local REQ_CANCELLED = 'Cancelled %s'
 local REQ_SEND = 'Sent %s'
 local REQ_SEND_FAIL = 'Cannot send %s: %s'
@@ -44,6 +45,8 @@ function Request:canSend()
         return false, 'Request is incoming'
     elseif self._isSent then
         return false, 'Request has already been sent'
+    elseif IS_SINGLEPLAYER and not self._dispatcher:canRunInSingleplayer() then
+        return false, 'Cannot run in singleplayer'
     elseif self._isCancelled then
         return false
     end
@@ -154,6 +157,12 @@ function Request:isSent()
     return self._isSent
 end
 
+---Returns whether the request is running in singleplayer.
+---@return boolean
+function Request:isSingleplayer()
+    return IS_SINGLEPLAYER
+end
+
 ---Responds to the request on the same topic.
 ---@param args table? Arguments to send with the response.
 ---@return boolean success Whether the reply was successfully sent.
@@ -218,7 +227,9 @@ function Request:send(args)
     -- server → client
     if self:isFromServer() then
         local player = self._player
-        if player then
+        if IS_SINGLEPLAYER then
+            triggerEvent('OnServerCommand', module, command, args)
+        elseif player then
             sendServerCommand(player, module, command, args)
         else
             sendServerCommand(module, command, args)
@@ -230,7 +241,11 @@ function Request:send(args)
     end
 
     -- client → server
-    sendClientCommand(module, command, args)
+    if IS_SINGLEPLAYER then
+        triggerEvent('OnClientCommand', module, command, self._player, args)
+    else
+        sendClientCommand(module, command, args)
+    end
 
     self._isSent = true
     self:_log(REQ_SEND, self)
