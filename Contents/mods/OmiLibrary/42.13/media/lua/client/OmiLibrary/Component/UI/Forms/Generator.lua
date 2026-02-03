@@ -704,12 +704,13 @@ return Generator
 ---@class Args.FormGenerator.FromFile
 ---@field prefix? string The prefix to use for translation string IDs. Defaults to `<modId>.config`.
 ---@field title? string The text to use for the form title. Defaults to the translation from `prefix` + `'_title'`.
----@field closeOnSave? boolean If `true`, the form will immediately close after saving. Defaults to `true`.
----@field destroyOnClose? boolean If `true`, the form will immediately be destroyed when closing. Defaults to `true`.
+---@field closeOnSave? boolean Flag for whether the form should immediately close after saving. Defaults to `false`.
+---@field destroyOnClose? boolean Flag for whether the form should be destroyed when closing. Defaults to `true`.
 
 ---@class Args.FormGenerator.Partial : Args.FormGenerator.FromFile
 ---@field prefix? string The prefix to use for translation string IDs. Defaults to `OmiLibrary.form-default`.
 ---@field versionKey? string A top-level field key that stores the version field, to ignore in the form. Defaults to `'VERSION'`.
+---@field closeOnSave? boolean Flag for whether the form should immediately close after saving. Defaults to `true`.
 ---@field rules? table<string, forms.Rules> A mapping of schema property keys to associated rules.
 
 ---@class Args.FormGenerator : Args.FormGenerator.Partial

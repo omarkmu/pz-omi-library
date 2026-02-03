@@ -165,6 +165,10 @@ function schema.fromJsonFile(options)
         form.prefix = options.modId .. '.config'
     end
 
+    if form.closeOnSave == nil then
+        form.closeOnSave = false
+    end
+
     return schema.new({
         properties = properties,
         form = form,
