@@ -87,7 +87,7 @@ end
 ---@return TData
 function PlayerCache:updatePlayer(player)
     local data = self:createPlayerData(player)
-    self:setByIndex('username', data.username, data)
+    self:setByIndex('onlineID', data.onlineID, data)
 
     return data
 end
@@ -100,11 +100,15 @@ end
 function PlayerCache:new(args)
     ---@diagnostic disable-next-line: cast-type-mismatch
     args = core.copy(args)
-    args.primaryKey = args.primaryKey or 'username'
+    args.primaryKey = args.primaryKey or 'onlineID'
 
     local indexes = core.copyList(args.indexes)
     if not core.includes(indexes, 'onlineID') then
         indexes[#indexes + 1] = 'onlineID'
+    end
+
+    if not core.includes(indexes, 'username') then
+        indexes[#indexes + 1] = 'username'
     end
 
     args.indexes = indexes
@@ -126,7 +130,7 @@ return PlayerCache
 --#region Type Definitions
 
 ---@class Args.PlayerCache<TData : PlayerCacheData> : Args.Cache.Base<TData>
----@field primaryKey? string The primary key to index cache items by. Defaults to `username`.
+---@field primaryKey? string The primary key to index cache items by. Defaults to `onlineID`.
 ---@field onCreatePlayerData? cache.Callback.CreatePlayerData<TData> Invoked to create player data given a player.
 ---@field onCreatePlayerDataArgs? table Arguments for `onCreatePlayerData`.
 ---@field onCreatePlayerDataTarget? any The first argument to pass to the `onCreatePlayerData` callback.

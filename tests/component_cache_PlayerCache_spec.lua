@@ -3,6 +3,7 @@
 
 local cache = require 'OmiLibrary/Module/Cache'
 
+local MOCK_ONLINE_ID = 0
 local MOCK_USERNAME = 'MockUsername'
 local MOCK_FORENAME = 'Bob'
 local MOCK_SURNAME = 'Ross'
@@ -15,6 +16,7 @@ describe('#component PlayerCache #method', function()
     local expectedData ---@type table
     before_each(function()
         player = zomboid.player({
+            onlineID = MOCK_ONLINE_ID,
             username = MOCK_USERNAME,
             forename = MOCK_FORENAME,
             surname = MOCK_SURNAME,
@@ -26,7 +28,7 @@ describe('#component PlayerCache #method', function()
 
         ---@type PlayerCacheData
         expectedData = {
-            onlineID = 0,
+            onlineID = MOCK_ONLINE_ID,
             username = MOCK_USERNAME,
             forename = MOCK_FORENAME,
             surname = MOCK_SURNAME,
@@ -65,7 +67,7 @@ describe('#component PlayerCache #method', function()
         end)
 
         it('creates player data given an online ID', function()
-            assert.is_table(playerCache:defaultCreateItemData('onlineID', 0))
+            assert.is_table(playerCache:defaultCreateItemData('onlineID', MOCK_ONLINE_ID))
         end)
 
         it('returns nil given an invalid index', function()
@@ -76,29 +78,33 @@ describe('#component PlayerCache #method', function()
     describe('get', function()
         it('creates cache items on cache miss', function()
             assert.equal(0, playerCache:count())
-            assert.same(expectedData, playerCache:get(MOCK_USERNAME))
+            assert.same(expectedData, playerCache:get(MOCK_ONLINE_ID))
             assert.equal(1, playerCache:count())
         end)
     end)
 
     describe('iterate', function()
         it('allows iteration over cache items', function()
-            local otherMockUsername = 'PlayerTwo'
-            zomboid.player({ username = otherMockUsername, forename = 'Alice' })
+            local otherOnlineID = 1
+            zomboid.player({
+                onlineID = otherOnlineID,
+                username = 'PlayerTwo',
+                forename = 'Kate',
+            })
 
-            playerCache:get(MOCK_USERNAME)
-            playerCache:get(otherMockUsername)
+            playerCache:get(MOCK_ONLINE_ID)
+            playerCache:get(otherOnlineID)
 
             assert.equal(2, playerCache:count())
 
             local iterator = playerCache:iterate()
 
             local key, value = iterator()
-            assert.is_string(key)
+            assert.is_number(key)
             assert.is_table(value)
 
             key, value = iterator()
-            assert.is_string(key)
+            assert.is_number(key)
             assert.is_table(value)
 
             key, value = iterator()
@@ -109,15 +115,15 @@ describe('#component PlayerCache #method', function()
 
     describe('updatePlayer', function()
         it('updates the cache with information from a player', function()
-            playerCache:get(MOCK_USERNAME)
+            playerCache:get(MOCK_ONLINE_ID)
             assert.equal(1, playerCache:count())
-            assert.same(expectedData, playerCache:get(MOCK_USERNAME))
+            assert.same(expectedData, playerCache:get(MOCK_ONLINE_ID))
 
             stub(player, 'getSpeakColour', Color.new(100, 100, 100))
             playerCache:updatePlayer(player)
 
             expectedData.speechColor = { r = 100, g = 100, b = 100 }
-            assert.same(expectedData, playerCache:get(MOCK_USERNAME))
+            assert.same(expectedData, playerCache:get(MOCK_ONLINE_ID))
         end)
     end)
 end)
