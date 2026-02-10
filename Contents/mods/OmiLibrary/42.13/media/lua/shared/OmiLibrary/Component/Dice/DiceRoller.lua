@@ -32,6 +32,7 @@ local sort = table.sort
 ---handlers for selecting values.
 ---@field protected _vars table<string, number> Associates variable names to values that can be used in the current expression.
 ---@field protected _globalVars table<string, number> Associates variable names to values that can be used in any expression.
+---@field protected _getVariableCb? fun(name: string): number Callback provided to `roll` for getting variable values.
 local Roller = core.class('Roller')
 
 
@@ -122,6 +123,7 @@ end
 ---@return (DiceRollError | DiceParseError)? error The error that occurred.
 function Roller:tryRoll(expr, args)
     self._rolls = 0
+    self._getVariableCb = args and args.getVariable
 
     local ast ---@type AST.Expression
     if type(expr) == 'string' then
@@ -216,7 +218,10 @@ end
 ---@return number
 ---@protected
 function Roller:_getVariable(name)
-    return self._vars[name] or self._globalVars[name] or 0
+    local cb = self._getVariableCb
+    local result = cb and cb(name)
+
+    return result or self._vars[name] or self._globalVars[name] or 0
 end
 
 ---Evaluates an AST expression node.
@@ -746,5 +751,7 @@ return Roller
 ---@field stringifier Stringifier? The stringifier to use for the result. Defaults to `RichTextStringifier`.
 ---@field variables? table<string, number> Variables that can be referenced in the roll's expression.
 ---This will have no effect if the parser in use does not allow identifiers.
+---@field getVariable? fun(name: string): number? Callback used to get the value of a variable.
+---This takes precedence over `variables`. If this returns `nil`, `variables` will be checked, then global variables.
 
 --#endregion
