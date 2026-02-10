@@ -386,7 +386,7 @@ function InterpolationParser:readSpecialText()
 end
 
 ---Reads a string of literal text delimited by backticks.
----Special characters can be escaped with $.
+---Backticks can be escaped with $.
 ---@return BasicParseNode?
 ---@protected
 function InterpolationParser:readString()
@@ -396,29 +396,31 @@ function InterpolationParser:readString()
 
     local stop
     local node = self:createNode(NodeType.string)
-    local parent = self:setCurrentNode(node)
     self._ptr = self._ptr + 1
 
+    local chars = {}
     while self:hasNext() do
-        if self:peek() == '`' then
+        local c = self:peek()
+        if c == '$' and self:peek(2) == '$`' then
+            chars[#chars + 1] = '`'
+            self._ptr = self._ptr + 2
+        elseif c == '`' then
+            stop = self._ptr
             break
-        end
-
-        if not (self:readEscape() or self:readText() or self:readSpecialText()) then
-            self:errorHere(ERR.BAD_CHAR:format(self:peek()), node, nil, 'BAD_CHAR')
-            stop = self._ptr - 1
-
-            break
+        else
+            chars[#chars + 1] = c
+            self._ptr = self._ptr + 1
         end
     end
 
     self:setNodeEnd(node, stop)
-    self:setCurrentNode(parent)
 
     if self:peek() ~= '`' then
         -- unterminated string; read as backtick and rewind
         self._ptr = node.range[1]
         node = self:createNode(NodeType.text, { value = '`' })
+    else
+        node.value = concat(chars)
     end
 
     self._ptr = self._ptr + 1
@@ -507,24 +509,14 @@ function InterpolationParser:postprocessNode(node)
         }
     elseif node.type == NodeType.token then
         return {
-            type = node.type,
+            type = NodeType.token,
             value = node.value --[[@as string]],
         }
     elseif node.type == NodeType.string then
         -- convert string to basic text node
-        local parts = {}
-        if node.children then
-            for i = 1, #node.children do
-                local built = self:postprocessNode(node.children[i])
-                if built and built.value then
-                    parts[#parts + 1] = built.value
-                end
-            end
-        end
-
         return {
             type = NodeType.text,
-            value = concat(parts),
+            value = node.value --[[@as string]],
         }
     elseif node.type == NodeType.argument or node.type == NodeType.at_key or node.type == NodeType.at_value then
         -- convert node to list of child nodes
