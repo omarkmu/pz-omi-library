@@ -54,7 +54,7 @@ function CheckboxGroup:getTextColor(index, color)
     color.b = target.b
     color.a = target.a
 
-    return color
+    return color --[[@as ColorTableRGBA<number>]]
 end
 
 ---Returns whether the checkbox at the given index is selected.
@@ -241,7 +241,7 @@ function CheckboxGroup:new(args)
     this:setOnChange(target, args.onChange, unpack(args.onChangeArgs or {}))
 
     local maxW = 0
-    local items = args.items or {}
+    local items = args.items or {} --[[@as Checkbox.ItemOrString[] ]]
     for i = 1, #items do
         local item = items[i]
         if type(item) == 'string' then

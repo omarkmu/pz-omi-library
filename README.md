@@ -36,7 +36,7 @@ If you intend to do so, keep in mind that the API is not to be considered stable
 
 ### Client-only modules
 
-- `chat`: Includes a few utility functions for working with chat, and for checking for the presence of `OmiChat`.
+- `chat`: Includes a few utility functions for working with chat and for checking for the presence of [OmiChat](https://github.com/omarkmu/pz-omichat).
 - `ui`: Various UI components, including an extended rich text panel. Most are analogous to existing vanilla components.
 
 ### Other components

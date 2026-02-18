@@ -220,7 +220,7 @@ return Button
 ---@field enable? boolean Whether the button should be enabled.
 ---@field setWidthToText? boolean If `true`, the width of the button will be set to the minimum to fit the button text. The minimum width will be respected.
 ---@field useAcceptStyle? boolean Flag for whether the standard 'accept' style should be applied when creating the button.
----@field useCancelStyle? boolean Flag for whether the standard 'accept' style should be applied when creating the button.
+---@field useCancelStyle? boolean Flag for whether the standard 'cancel' style should be applied when creating the button.
 ---@field onMouseDown? Callback.Button.Mouse Invoked when the mouse is pressed on the button.
 ---@field onMouseDownArgs? table Arguments for `onMouseDown`.
 ---@field onMouseDownTarget? any The first argument to pass to the `onMouseDown` callback.

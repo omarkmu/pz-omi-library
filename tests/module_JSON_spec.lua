@@ -25,6 +25,62 @@ describe('#module json #function', function()
         end)
     end)
 
+    describe('tryReadObject', function()
+        after_each(zomboid.revert_files)
+
+        it('can use a given file reader', function()
+            zomboid.set_cache_file('test.json', '{"field": "value"}')
+            local result, err = json.tryReadObject({ reader = getFileReader('test.json', false) })
+
+            assert.same({ field = 'value' }, result)
+            assert.is_nil(err)
+        end)
+
+        it('returns the JSON-decoded file content', function()
+            zomboid.set_cache_file('test.json', '{"field": "value"}')
+            local result, err = json.tryReadObject('test.json')
+
+            assert.same({ field = 'value' }, result)
+            assert.is_nil(err)
+        end)
+
+        it('returns an error if the file could not be opened', function()
+            stub(_G, 'getFileReader', function() error('test error') end):auto_revert()
+
+            local result, err = json.tryReadObject('unknown.json')
+
+            assert.is_nil(result)
+            assert.equal('could not open file unknown.json', err)
+        end)
+
+        it('returns an empty object for an empty file', function()
+            zomboid.set_cache_file('empty.json', '')
+
+            local result, err = json.tryReadObject('empty.json')
+
+            assert.same({}, result)
+            assert.is_nil(err)
+        end)
+
+        it('returns an error for non-JSON content', function()
+            zomboid.set_cache_file('not.json', 'hello!')
+
+            local result, err = json.tryReadObject('not.json')
+
+            assert.is_nil(result)
+            assert.is_string(err)
+        end)
+
+        it('returns an error for an invalid JSON type', function()
+            zomboid.set_cache_file('string.json', '"hello, world!"')
+
+            local result, err = json.tryReadObject('string.json')
+
+            assert.is_nil(result)
+            assert.equal('invalid file content', err)
+        end)
+    end)
+
     describe('tryDecode', function()
         it('calls tryDecode on a Decoder', function()
             local s = spy.on(json.Decoder, 'tryDecode')

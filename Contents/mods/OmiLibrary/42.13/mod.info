@@ -1,9 +1,9 @@
 name=OmiLibrary
 id=OmiLibrary
 category=features
-description=Utility library for use by other mods.
+description=It's a utility library. <LINE> This mod has no effect on its own; this is for use by other mods.
 author=Omar (omiyomy)
-modversion=0.1.0
+modversion=0.2.0
 versionMin=42.13.0
 icon=OmiLibrary_icon.png
 poster=OmiLibrary_poster.png

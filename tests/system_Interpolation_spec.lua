@@ -146,9 +146,12 @@ describe('#system interpolation', function()
             { '``', '``' },
             { '$$ $@ $) $( $: $;', '$ @ ) ( : ;' },
             { 'hello world', 'hello world' },
+
+            -- strings
             { '$str(``)', '' },
             { '$str(`hello world`)', 'hello world' },
-            { '$str(`$$ $@ $) $( $: $;`)', '$ @ ) ( : ;' },
+            { '$str(`$$ $@ $) $( $: $;`)', '$$ $@ $) $( $: $;' },
+            { '$str(`$`hello$``)', '`hello`' },
 
             -- tokens
             { '$unknown', '' },

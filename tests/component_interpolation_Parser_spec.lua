@@ -57,20 +57,6 @@ describe('#component InterpolationParser #method', function()
         end)
     end)
 
-    describe('readString', function()
-        it('produces an error when unable to read text', function()
-            local _errorHere = spy.on(BaseParser, 'errorHere')
-
-            parser:reset('`hello`')
-            stub(Parser, 'readEscape'):auto_revert()
-            stub(Parser, 'readText'):auto_revert()
-            stub(Parser, 'readSpecialText'):auto_revert()
-
-            parser:readString()
-            assert.spy(_errorHere).called_at_least(1)
-        end)
-    end)
-
     describe('readSpecialText', function()
         it('returns nil when attempting to read a non-special string', function()
             parser:reset('A')

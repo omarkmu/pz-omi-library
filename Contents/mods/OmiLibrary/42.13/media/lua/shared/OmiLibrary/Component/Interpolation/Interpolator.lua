@@ -277,7 +277,7 @@ function Interpolator:_createCacheItem(text)
     if not result.success then
         local list = {}
 
-        local errors = result.errors or {}
+        local errors = result.errors or {} --[[@as ParserError[] ]]
         for i = 1, #errors do
             list[#list + 1] = errors[i].message
         end

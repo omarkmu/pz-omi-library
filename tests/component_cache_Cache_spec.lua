@@ -7,10 +7,10 @@ local cache = require 'OmiLibrary/Module/Cache'
 ---@param args Args.Cache.Base?
 ---@return Cache<{ name: string }>
 local function createNameCache(args)
-    args = args or {} --[[@as Args.Cache<{ name: string }>]]
-    args.primaryKey = 'name'
+    local _args = (args or {}) --[[@as Args.Cache<{ name: string }>]]
+    _args.primaryKey = 'name'
 
-    return cache.new(args)
+    return cache.new(_args)
 end
 
 ---Creates a basic test cache containing integer values.
@@ -18,10 +18,10 @@ end
 ---@param args Args.Cache.Base?
 ---@return Cache<{ value: integer }>
 local function createValueCache(count, args)
-    args = args or {} --[[@as Args.Cache<{ value: integer }>]]
-    args.primaryKey = 'value'
+    local _args = (args or {}) --[[@as Args.Cache<{ value: integer }>]]
+    _args.primaryKey = 'value'
 
-    local valueCache = cache.new(args)
+    local valueCache = cache.new(_args)
     for i = 1, count do
         zomboid.set_timestamp(i * 1000)
         valueCache:set(i, { value = i })

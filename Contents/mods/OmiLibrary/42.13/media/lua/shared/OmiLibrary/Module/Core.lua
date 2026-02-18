@@ -57,6 +57,9 @@ core.Scheduler = require 'OmiLibrary/Component/Core/Scheduler'
 ---Component for logging messages with different log levels.
 core.Logger = require 'OmiLibrary/Component/Logging/Logger'
 
+---Base error type.
+core.Error = require 'OmiLibrary/Component/Core/Error'
+
 ---Base string parser component.
 core.Parser = require 'OmiLibrary/Component/Core/Parser'
 

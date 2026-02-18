@@ -91,7 +91,9 @@ function Generator:_generateContent(form)
     self.form = nil
 
     local first = form.listbox.items[1] or {}
-    form:switchPage(first.item)
+    if first.item then
+        form:switchPage(first.item)
+    end
 end
 
 ---Generates a page for a form.
@@ -223,7 +225,7 @@ function Generator:_generateField(info, panel)
     info.control = control
     info.label = label
 
-    self:_increaseNextY(info.rules.paddingBottom)
+    self:_increaseNextY(info.rules.padBottom)
 
     return true
 end
@@ -256,7 +258,7 @@ function Generator:_generateFieldControl(info, panel)
             info = info,
             value = value,
             tooltip = tooltip,
-            y = self.nextY + (rules.paddingTop or 0),
+            y = self.nextY + (rules.padTop or 0),
         }
     elseif info.type == 'color' then
         return form:createColorEntry {
@@ -417,13 +419,7 @@ function Generator:_generateFieldLabel(info, panel)
 
     local isHeading = info.type == 'object' and not info.isMapField
 
-    local padTop = 0.0
-    if info.rules.paddingTop then
-        padTop = info.rules.paddingTop
-    elseif isHeading then
-        padTop = form.headingPadY
-    end
-
+    local padTop = info.rules.padTop or (isHeading and form.headingPadY or 0)
     local label = UI.label {
         parent = panel,
         text = info.name,
@@ -705,13 +701,17 @@ return Generator
 
 --#region Type Definitions
 
----@class Args.FormGenerator.Partial
----@field prefix? string The prefix to use for translation string IDs. Defaults to `OmiLibrary.form-default`.
+---@class Args.FormGenerator.FromFile
+---@field prefix? string The prefix to use for translation string IDs. Defaults to `<modId>.config`.
 ---@field title? string The text to use for the form title. Defaults to the translation from `prefix` + `'_title'`.
+---@field closeOnSave? boolean Flag for whether the form should immediately close after saving. Defaults to `false`.
+---@field destroyOnClose? boolean Flag for whether the form should be destroyed when closing. Defaults to `true`.
+
+---@class Args.FormGenerator.Partial : Args.FormGenerator.FromFile
+---@field prefix? string The prefix to use for translation string IDs. Defaults to `OmiLibrary.form-default`.
 ---@field versionKey? string A top-level field key that stores the version field, to ignore in the form. Defaults to `'VERSION'`.
+---@field closeOnSave? boolean Flag for whether the form should immediately close after saving. Defaults to `true`.
 ---@field rules? table<string, forms.Rules> A mapping of schema property keys to associated rules.
----@field closeOnSave? boolean If `true`, the form will immediately close after saving. Defaults to `true`.
----@field destroyOnClose? boolean If `true`, the form will immediately be destroyed when closing. Defaults to `true`.
 
 ---@class Args.FormGenerator : Args.FormGenerator.Partial
 ---@field schema Schema The schema to use for the generated form.

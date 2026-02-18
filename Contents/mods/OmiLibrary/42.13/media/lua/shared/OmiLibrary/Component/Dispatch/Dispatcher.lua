@@ -27,6 +27,7 @@ local TRIGGER_UNKNOWN = 'Ignoring unknown trigger %s for %s'
 ---@field protected _eventListeners table<string, function?> Map of listener names to listeners.
 ---@field protected _triggers table<Trigger.Type, table<Topic, table>> Associates triggers to tables containing per-topic trigger state.
 ---@field protected _log? Logger The logger to use.
+---@field protected _runInSingleplayer boolean Flag for whether requests should be processed in singleplayer.
 local Dispatcher = core.class('Dispatcher')
 Dispatcher.trigger = Trigger
 
@@ -84,6 +85,12 @@ function Dispatcher:broadcast(topic, args, source)
     return self:_trySend(req, attempts)
 end
 
+---Returns whether requests should be processed in singleplayer.
+---@return boolean
+function Dispatcher:canRunInSingleplayer()
+    return self._runInSingleplayer
+end
+
 ---Connects the dispatcher to listen for commands.
 ---This is called by the constructor.
 function Dispatcher:connect()
@@ -98,7 +105,7 @@ function Dispatcher:connect()
             self:_onReceive(false, module, command, args, player)
         end
 
-        Events.OnClientCommand.Add(self._serverListener)
+        Events.OnClientCommand.Add(self._serverListener --[[@as function]])
     end
 
     -- server → client
@@ -501,6 +508,7 @@ function Dispatcher:new(options)
     this._eventListeners = {}
     this._module = options.module
     this._log = options.logger
+    this._runInSingleplayer = options.runInSingleplayer ~= false
 
     this:connect()
     return this
@@ -514,5 +522,6 @@ return Dispatcher
 ---@class Args.Dispatcher
 ---@field module string The module identifier to use for commands.
 ---@field logger? Logger The logger to use for debug messages.
+---@field runInSingleplayer? boolean Flag for whether requests should be processed in singleplayer. Defaults to `true`.
 
 --#endregion

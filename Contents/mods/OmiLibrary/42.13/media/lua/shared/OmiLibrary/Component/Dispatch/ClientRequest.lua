@@ -16,7 +16,8 @@ function ClientRequest:canReceive()
     local topic = self._topic
     local player = self._player
 
-    if topic:isRequireAdmin() and (not player or not player:isAccessLevel('Admin')) then
+    local requireAdmin = topic:isRequireAdmin() and not self:isSingleplayer()
+    if requireAdmin and (not player or not player:isAccessLevel('Admin')) then
         return false, 'Insufficient permissions'
     end
 
@@ -35,7 +36,8 @@ function ClientRequest:canSend()
     local topic = self._topic
     local player = self._player
 
-    if topic:isRequireAdmin() and (not player or not player:isAccessLevel('Admin')) then
+    local requireAdmin = topic:isRequireAdmin() and not self:isSingleplayer()
+    if requireAdmin and (not player or not player:isAccessLevel('Admin')) then
         return false, 'Insufficient permissions'
     end
 

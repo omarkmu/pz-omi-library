@@ -30,7 +30,7 @@ function DelimitedList:update(str)
     end
 
     self._cached = str
-    return core.split(str, self._delimiter, self._list)
+    return core.split(str --[[@as string]], self._delimiter, self._list)
 end
 
 ---Returns the underlying list.

@@ -185,7 +185,7 @@ function Korean.isVowel(c, options)
 
     result = Helpers.isVowelLatin(c, options)
     if result ~= nil then
-        return result
+        return result --[[@as boolean]]
     end
 
     if Korean.isSyllable(c) then

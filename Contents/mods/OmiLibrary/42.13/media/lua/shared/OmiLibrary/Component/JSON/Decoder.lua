@@ -190,7 +190,7 @@ end
 ---@param str string
 ---@param idx integer
 ---@return boolean success
----@return number | string resultOrError
+---@return json.JSONType resultOrError
 ---@return integer index
 ---@protected
 function Decoder:_parseLiteral(str, idx)
@@ -268,7 +268,7 @@ function Decoder:_parseObject(str, idx)
         success, val, idx = self:_parse(str, idx)
 
         if not success then
-            return success, val --[[@as string]], idx
+            return success --[[@as any]], val --[[@as string]], idx
         end
 
         -- Set

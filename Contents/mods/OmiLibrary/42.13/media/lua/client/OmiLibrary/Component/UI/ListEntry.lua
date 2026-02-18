@@ -182,7 +182,7 @@ end
 ---@return ListBoxItem
 ---@protected
 function ListEntry:_addToListbox(itemInfo)
-    local item = self.listbox:addItem(itemInfo.text)
+    local item = self.listbox:addItem(itemInfo.text, itemInfo.text)
     item.tooltip = itemInfo.tooltip
     item.textColor = itemInfo.textColor
     item.textColorDisabled = itemInfo.textColorDisabled

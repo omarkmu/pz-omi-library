@@ -166,8 +166,10 @@ function FUNCTION.GETTEXT(args, opts)
     end
 
     local unwrapped = {}
-    for i = 1, #args do
-        unwrapped[i] = tostring(args[i])
+    for i = 2, #args do
+        unwrapped[i - 1] = tostring(args[i])
+
+        -- getText only supports up to 4 substitution variables
         if i == 5 then
             break
         end
@@ -181,28 +183,28 @@ function FUNCTION.GETTEXT(args, opts)
     return getText(id, unpack(unwrapped))
 end
 
----The `KR_PARTICLE()` builtin.
+---The `KO_PARTICLE()` builtin.
 ---This can be used to choose a Korean particle based on whether
 ---the first argument ends with a vowel or consonant.
 ---@param args FluentValue[] Positional arguments.
 ---@param opts table<string, FluentValue> Named arguments.
 ---@return FluentValue value
 ---@return string? error
-function FUNCTION.KR_PARTICLE(args, opts)
-    return BuiltIn._getKrParticle('KR_PARTICLE', args, opts)
+function FUNCTION.KO_PARTICLE(args, opts)
+    return BuiltIn._getKrParticle('KO_PARTICLE', args, opts)
 end
 
----The `KR_WITH_PARTICLE()` builtin.
+---The `KO_WITH_PARTICLE()` builtin.
 ---This can be used to choose a Korean particle based on whether
 ---the first argument ends with a vowel or consonant.
 ---
----This is the same as `KR_PARTICLE`, but includes the input before the particle.
+---This is the same as `KO_PARTICLE`, but includes the input before the particle.
 ---@param args FluentValue[] Positional arguments.
 ---@param opts table<string, FluentValue> Named arguments.
 ---@return FluentValue value
 ---@return string? error
-function FUNCTION.KR_WITH_PARTICLE(args, opts)
-    local result, err = BuiltIn._getKrParticle('KR_WITH_PARTICLE', args, opts)
+function FUNCTION.KO_WITH_PARTICLE(args, opts)
+    local result, err = BuiltIn._getKrParticle('KO_WITH_PARTICLE', args, opts)
     if core.isinstance(result, FluentNone) then
         return result, err
     end
