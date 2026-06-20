@@ -28,7 +28,6 @@ If you intend to do so, keep in mind that the API is not to be considered stable
 - `json`: JSON helpers, based on [rxi/json](github.com/rxi/json.lua). Includes utilities and components for encoding and decoding.
 - `l10n`: Utilities for localization, including support for [Fluent](https://projectfluent.org) translation files.
     - This is intended to replace the vanilla translation system for most uses. It cannot replace all of them.
-    - It also includes a `setText` function, which sets the value of a vanilla translation. If a translation is retrieved before this is called, there's no way to alter its value.
 - `schema`: Contains utilities for creating schemas.
     - This is primarily useful when used with the `configuration` module.
     It can also be used with the `forms` UI module to generate a form UI that can save to a corresponding table.

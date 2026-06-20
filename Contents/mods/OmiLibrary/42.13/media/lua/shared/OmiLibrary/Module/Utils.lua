@@ -399,20 +399,6 @@ function core.getActivatedModsQualifiedSet()
     return core.copy(core._activatedModsSetQualified)
 end
 
----Returns a Field object given its name.
----@param obj any
----@param name string
----@return Field?
-function core.getClassFieldByName(obj, name)
-    for i = 0, getNumClassFields(obj) - 1 do
-        local field = getClassField(obj, i)
-
-        if tostring(field):match('([^%.]+)$') == name then
-            return field
-        end
-    end
-end
-
 ---Returns the value of a numeric character reference or character entity reference.
 ---If the value cannot be resolved, returns `nil`.
 ---@param entity string
