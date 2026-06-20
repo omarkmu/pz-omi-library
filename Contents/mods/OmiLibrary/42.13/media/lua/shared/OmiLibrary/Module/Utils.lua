@@ -27,10 +27,7 @@ local getPlayerFromUsername = getPlayerFromUsername
 
 ---@class(partial) core
 ---@field private _activatedMods string[]? List of activated mod IDs.
----@field private _activatedModsQualified string[]? List of activated fully-qualified mod IDs (including workshop item IDs).
 ---@field private _activatedModsSet SetTable<string>? Set of activated mod IDs.
----@field private _activatedModsSetQualified SetTable<string>? Set of activated fully-qualified mod IDs (including workshop item IDs).
----@field private _activatedWorkshopItems SetTable<string>? Set of activated workshop item IDs.
 ---@field private _random Random? Shared `Random` instance.
 local core = {}
 
@@ -359,7 +356,7 @@ function core.format(pattern, ...)
     return pattern
 end
 
----Returns a list of activated mod IDs, without the leading backslash.
+---Returns a list of activated mod IDs.
 ---@return string[]
 function core.getActivatedMods()
     if not core._activatedMods then
@@ -377,26 +374,6 @@ function core.getActivatedModsSet()
     end
 
     return core.copy(core._activatedModsSet)
-end
-
----Returns a list of activated mod IDs, each prefixed with a single backslash.
----@return string[]
-function core.getActivatedModsQualified()
-    if not core._activatedModsQualified then
-        core._getActivatedMods()
-    end
-
-    return core.copyList(core._activatedModsQualified)
-end
-
----Returns a set of activated mod IDs, each prefixed with a single backslash.
----@return SetTable<string>
-function core.getActivatedModsQualifiedSet()
-    if not core._activatedModsSetQualified then
-        core._getActivatedMods()
-    end
-
-    return core.copy(core._activatedModsSetQualified)
 end
 
 ---Returns the value of a numeric character reference or character entity reference.
@@ -978,27 +955,17 @@ end
 function core._getActivatedMods()
     local modIdList = {}
     local modIdSet = {}
-    local qualifiedList = {}
-    local qualifiedSet = {}
 
     local activatedModArrayList = getActivatedMods()
     for i = 0, activatedModArrayList:size() - 1 do
-        local id = activatedModArrayList:get(i)
+        local modId = activatedModArrayList:get(i)
 
-        local modId = id:match('^%d*\\(.+)$')
-        if modId then
-            modIdSet[modId] = true
-            modIdList[#modIdList + 1] = modId
-        end
-
-        qualifiedSet[id] = true
-        qualifiedList[#qualifiedList + 1] = id
+        modIdSet[modId] = true
+        modIdList[#modIdList + 1] = modId
     end
 
     core._activatedMods = modIdList
     core._activatedModsSet = modIdSet
-    core._activatedModsQualified = qualifiedList
-    core._activatedModsSetQualified = qualifiedSet
 end
 
 core._getActivatedMods()

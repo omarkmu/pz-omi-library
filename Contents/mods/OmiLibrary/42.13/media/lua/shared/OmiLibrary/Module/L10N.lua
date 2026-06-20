@@ -241,7 +241,7 @@ function L10N.loadModResource(modId, filename)
 
     local resource = L10N._parseFromReader(reader, filename)
     if not resource.global and not resource.bundle then
-        resource.bundle = modId:match('^%d*\\(.+)$') or modId
+        resource.bundle = modId
     end
 
     return resource
@@ -376,14 +376,12 @@ end
 ---@param loaded SetTable<FluentBundle>
 ---@protected
 function L10N._loadModResourcesForLocale(locale, loaded)
-    local mods = core.getActivatedModsQualified()
+    local mods = core.getActivatedMods()
 
     for i = 1, #mods do
         local modId = mods[i]
-        local unqualifiedId = modId:match('^%d*\\(.+)$') or modId
-
         local path = 'media/ftl/' .. locale
-        local additionalPath = 'media/ftl/' .. unqualifiedId .. '/' .. locale
+        local additionalPath = 'media/ftl/' .. modId .. '/' .. locale
 
         L10N._loadModResourcesForID(modId, path, loaded)
         L10N._loadModResourcesForID(modId, additionalPath, loaded)

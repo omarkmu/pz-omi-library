@@ -68,12 +68,7 @@ function json.tryRead(optionsOrFilename)
 
         pcall(function()
             if options.modId then
-                local modId = options.modId
-                if modId:sub(1, 1) ~= '\\' then
-                    modId = '\\' .. modId
-                end
-
-                file = getModFileReader(modId, filename, options.create or false)
+                file = getModFileReader(options.modId, filename, options.create or false)
             else
                 file = getFileReader(filename, options.create ~= false)
             end
