@@ -413,7 +413,7 @@ describe('#module core #function', function()
     describe('getActivatedMods', function()
         setup(function()
             clearActivatedModsCache()
-            zomboid.stub_activated_mods({ '\\OmiLibrary', '\\OmiChat' }):auto_revert()
+            zomboid.stub_activated_mods({ 'OmiLibrary', 'OmiChat' }):auto_revert()
         end)
 
         after_each(clearActivatedModsCache)
@@ -435,7 +435,7 @@ describe('#module core #function', function()
 
     describe('getActivatedModSet', function()
         setup(function()
-            zomboid.stub_activated_mods({ '\\OmiLibrary', '\\OmiChat' }):auto_revert()
+            zomboid.stub_activated_mods({ 'OmiLibrary', 'OmiChat' }):auto_revert()
         end)
 
         after_each(clearActivatedModsCache)
@@ -589,7 +589,7 @@ describe('#module core #function', function()
 
     describe('isModActive', function()
         setup(function()
-            zomboid.stub_activated_mods({ '\\OmiLibrary', '\\OmiChat' }):auto_revert()
+            zomboid.stub_activated_mods({ 'OmiLibrary', 'OmiChat' }):auto_revert()
             core = reload_module('OmiLibrary/Module/Utils')
         end)
 

@@ -17,7 +17,6 @@ global-message = I am global
 ]]
 
 local MOD_ID = 'OmiLibrary'
-local MOD_ID_FULL = '\\OmiLibrary'
 
 local MSG_BASIC = 'message-basic'
 local MSG_UNKNOWN = 'unknown-message'
@@ -95,7 +94,7 @@ local function PATT_MISSING_MSG(id, bundle)
 end
 
 local function reload()
-    reload_module('OmiLibrary/Module/L10N/Core')
+    reload_module('OmiLibrary/Module/L10NCore')
     l10n = reload_module('OmiLibrary/Module/L10N')
 end
 
@@ -150,15 +149,15 @@ describe('#module l10n', function()
         _error = spy.on(_G, 'error'):auto_revert()
         _bundle = l10n.getOrCreateBundle(MOD_ID)
 
-        zomboid.stub_activated_mods({ MOD_ID_FULL }):auto_revert()
+        zomboid.stub_activated_mods({ MOD_ID }):auto_revert()
         reload_module('OmiLibrary/Module/Utils')
     end)
 
     eachLanguage(function(locale)
         setup(function()
             zomboid.set_cache_file(TEST_FILENAME_CACHE(locale), TEST_FTL)
-            zomboid.set_mod_file(MOD_ID_FULL, TEST_FILENAME_MOD(locale), TEST_FTL)
-            zomboid.set_mod_file(MOD_ID_FULL, TEST_FILENAME_MOD(locale, 'global.ftl'), GLOBAL_FTL)
+            zomboid.set_mod_file(MOD_ID, TEST_FILENAME_MOD(locale), TEST_FTL)
+            zomboid.set_mod_file(MOD_ID, TEST_FILENAME_MOD(locale, 'global.ftl'), GLOBAL_FTL)
         end)
     end, true)
 
@@ -205,7 +204,7 @@ describe('#module l10n', function()
         describe('addModResource', function()
             eachLanguage(function(locale)
                 it('adds a resource from a mod directory for locale ' .. locale, function()
-                    local resource, bundle = l10n.addModResource(MOD_ID_FULL, TEST_FILENAME_MOD(locale))
+                    local resource, bundle = l10n.addModResource(MOD_ID, TEST_FILENAME_MOD(locale))
                     assert.not_nil(resource)
                     assert.is_instance(resource, l10n.FluentResource)
 
@@ -537,7 +536,7 @@ describe('#module l10n', function()
         describe('loadModResource', function()
             eachLanguage(function(locale)
                 it('loads a resource from a mod directory for locale ' .. locale, function()
-                    local resource = l10n.loadModResource(MOD_ID_FULL, TEST_FILENAME_MOD(locale))
+                    local resource = l10n.loadModResource(MOD_ID, TEST_FILENAME_MOD(locale))
                     assert.not_nil(resource) ---@cast resource -?
                     assert.is_instance(resource, l10n.FluentResource)
 
@@ -550,7 +549,7 @@ describe('#module l10n', function()
             end)
 
             it('returns nil for an unknown filename', function()
-                assert.is_nil(l10n.loadModResource(MOD_ID_FULL, 'media/ftl/zzz/test.ftl'))
+                assert.is_nil(l10n.loadModResource(MOD_ID, 'media/ftl/zzz/test.ftl'))
             end)
         end)
 
