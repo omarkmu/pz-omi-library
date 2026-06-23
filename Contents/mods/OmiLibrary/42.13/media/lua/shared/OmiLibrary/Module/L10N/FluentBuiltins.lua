@@ -4,7 +4,7 @@
 ---@using omi.l10n.fluent
 
 local core = require 'OmiLibrary/Module/Utils'
-local l10n = require 'OmiLibrary/Module/L10N/Core'
+local l10n = require 'OmiLibrary/Module/Core/L10N'
 local FluentNone = require 'OmiLibrary/Component/L10N/FluentTypes/None'
 local FluentNumber = require 'OmiLibrary/Component/L10N/FluentTypes/Number'
 local FluentDateTime = require 'OmiLibrary/Component/L10N/FluentTypes/DateTime'

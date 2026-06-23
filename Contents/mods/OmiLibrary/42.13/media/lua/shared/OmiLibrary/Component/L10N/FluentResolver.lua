@@ -5,7 +5,7 @@
 ---@diagnostic disable: access-invisible
 
 local core = require 'OmiLibrary/Module/Utils'
-local l10n = require 'OmiLibrary/Module/L10N/Core'
+local l10n = require 'OmiLibrary/Module/Core/L10N'
 local builtin = require 'OmiLibrary/Module/L10N/FluentBuiltins'
 local FluentNone = require 'OmiLibrary/Component/L10N/FluentTypes/None'
 local FluentNumber = require 'OmiLibrary/Component/L10N/FluentTypes/Number'

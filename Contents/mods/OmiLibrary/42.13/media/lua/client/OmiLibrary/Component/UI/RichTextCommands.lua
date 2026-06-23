@@ -3,7 +3,7 @@
 ---@diagnostic disable: access-invisible
 
 local core = require 'OmiLibrary'
-local UI = require 'OmiLibrary/Module/UI/Core'
+local UI = require 'OmiLibrary/Module/Core/UI'
 
 local max = math.max
 local getTextManager = getTextManager

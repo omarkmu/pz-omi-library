@@ -2,7 +2,7 @@
 ---@namespace omi
 
 ---@class(partial) interpolate.libraries
-local Libraries = require 'OmiLibrary/Component/Interpolation/Libraries/Core'
+local Libraries = require 'OmiLibrary/Component/Interpolation/Core/Libraries'
 
 require 'OmiLibrary/Component/Interpolation/Libraries/Math'
 require 'OmiLibrary/Component/Interpolation/Libraries/Boolean'

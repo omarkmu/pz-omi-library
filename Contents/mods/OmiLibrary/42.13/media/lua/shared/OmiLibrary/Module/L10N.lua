@@ -13,7 +13,7 @@ local getModFileReader = getModFileReader
 
 
 ---@class l10n : l10n.core
-local L10N = require 'OmiLibrary/Module/L10N/Core'
+local L10N = require 'OmiLibrary/Module/Core/L10N'
 
 ---Parser for the `.ftl` syntax.
 L10N.FluentParser = require 'OmiLibrary/Component/L10N/FluentParser'

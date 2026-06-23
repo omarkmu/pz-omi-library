@@ -1,7 +1,7 @@
 ---UI element for a dialog with a color entry.
 ---@namespace omi
 
-local UI = require 'OmiLibrary/Module/UI/Core'
+local UI = require 'OmiLibrary/Module/Core/UI'
 local TextDialog = require 'OmiLibrary/Component/UI/TextDialog'
 local ColorEntry = require 'OmiLibrary/Component/UI/ColorEntry'
 

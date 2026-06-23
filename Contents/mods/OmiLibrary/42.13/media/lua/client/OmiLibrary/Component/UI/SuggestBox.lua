@@ -2,7 +2,7 @@
 ---@namespace omi
 
 local core = require 'OmiLibrary'
-local UI = require 'OmiLibrary/Module/UI/Core'
+local UI = require 'OmiLibrary/Module/Core/UI'
 local ListBox = require 'OmiLibrary/Component/UI/ListBox'
 
 

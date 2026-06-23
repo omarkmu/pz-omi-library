@@ -94,7 +94,7 @@ local function PATT_MISSING_MSG(id, bundle)
 end
 
 local function reload()
-    reload_module('OmiLibrary/Module/L10NCore')
+    reload_module('OmiLibrary/Module/Core/L10N')
     l10n = reload_module('OmiLibrary/Module/L10N')
 end
 

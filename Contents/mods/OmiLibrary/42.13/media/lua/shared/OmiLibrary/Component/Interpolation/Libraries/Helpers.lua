@@ -4,7 +4,7 @@
 local core = require 'OmiLibrary/Module/Utils'
 
 ---@class(partial) interpolate.libraries
-local Libraries = require 'OmiLibrary/Component/Interpolation/Libraries/Core'
+local Libraries = require 'OmiLibrary/Component/Interpolation/Core/Libraries'
 
 local min = math.min
 local pcall = pcall

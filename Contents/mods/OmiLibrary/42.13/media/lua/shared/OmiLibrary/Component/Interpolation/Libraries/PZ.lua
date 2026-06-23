@@ -4,7 +4,7 @@
 local Helpers = require 'OmiLibrary/Component/Interpolation/Libraries/Helpers'
 
 ---@class(partial) interpolate.libraries
-local Libraries = require 'OmiLibrary/Component/Interpolation/Libraries/Core'
+local Libraries = require 'OmiLibrary/Component/Interpolation/Core/Libraries'
 
 
 ---@class interpolate.libraries.Translate

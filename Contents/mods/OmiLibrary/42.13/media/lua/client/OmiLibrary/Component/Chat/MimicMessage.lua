@@ -4,7 +4,7 @@
 local core = require 'OmiLibrary'
 
 ---@class(partial) chat
-local chat = require 'OmiLibrary/Module/Chat/Core'
+local chat = require 'OmiLibrary/Module/Core/Chat'
 
 local format = string.format
 local concat = table.concat

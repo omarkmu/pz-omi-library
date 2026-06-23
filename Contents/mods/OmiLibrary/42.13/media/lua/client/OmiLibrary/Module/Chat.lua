@@ -2,7 +2,7 @@
 ---@namespace omi
 
 ---@class(partial) chat
-local Chat = require 'OmiLibrary/Module/Chat/Core'
+local Chat = require 'OmiLibrary/Module/Core/Chat'
 
 require 'OmiLibrary/Component/Chat/MimicMessage'
 

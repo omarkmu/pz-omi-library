@@ -2,7 +2,7 @@
 ---@namespace omi
 
 local core = require 'OmiLibrary'
-local UI = require 'OmiLibrary/Module/UI/Core'
+local UI = require 'OmiLibrary/Module/Core/UI'
 local Panel = require 'OmiLibrary/Component/UI/Panel'
 
 local max = math.max

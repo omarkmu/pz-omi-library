@@ -2,7 +2,7 @@
 ---@namespace omi
 
 ---@class(partial) ui
-local UI = require 'OmiLibrary/Module/UI/Core'
+local UI = require 'OmiLibrary/Module/Core/UI'
 
 ---Components and utilities related to forms.
 UI.forms = require 'OmiLibrary/Module/UI/Forms'

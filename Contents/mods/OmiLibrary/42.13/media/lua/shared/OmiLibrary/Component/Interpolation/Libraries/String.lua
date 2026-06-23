@@ -6,7 +6,7 @@ local Helpers = require 'OmiLibrary/Component/Interpolation/Libraries/Helpers'
 local MultiMap = require 'OmiLibrary/Component/Core/MultiMap'
 
 ---@class(partial) interpolate.libraries
-local Libraries = require 'OmiLibrary/Component/Interpolation/Libraries/Core'
+local Libraries = require 'OmiLibrary/Component/Interpolation/Core/Libraries'
 
 local unpack = unpack
 

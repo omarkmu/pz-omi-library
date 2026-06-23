@@ -2,7 +2,7 @@
 ---@namespace omi
 
 local core = require 'OmiLibrary'
-local UI = require 'OmiLibrary/Module/UI/Core'
+local UI = require 'OmiLibrary/Module/Core/UI'
 local TextEntry = require 'OmiLibrary/Component/UI/TextEntry'
 
 local ReadError = core.color.ReadError

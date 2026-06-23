@@ -2,7 +2,7 @@
 ---@namespace omi
 
 local core = require 'OmiLibrary'
-local UI = require 'OmiLibrary/Module/UI/Core'
+local UI = require 'OmiLibrary/Module/Core/UI'
 local Form = require 'OmiLibrary/Component/UI/Forms/Form'
 local Page = require 'OmiLibrary/Component/UI/Forms/PageInfo'
 local FieldInfo = require 'OmiLibrary/Component/UI/Forms/FieldInfo'
