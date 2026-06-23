@@ -27,15 +27,32 @@ return function(options)
 
     proxy.lib = require 'OmiLibrary'
 
+    local modId = options.id
     if options.logger then
         proxy.log = options.logger
     else
-        local logger = Logger.getOrCreate(options.id)
+        local logger = Logger.getOrCreate(modId)
         if options.name then
             logger.name = options.name
         end
 
         proxy.log = logger
+    end
+
+    function proxy.getAttr(id, attr, args)
+        return proxy.l10n.getAttr(id, attr, args, modId)
+    end
+
+    function proxy.getAttrOrNull(id, attr, args)
+        return proxy.l10n.getAttrOrNull(id, attr, args, modId)
+    end
+
+    function proxy.getText(id, args)
+        return proxy.l10n.getText(id, args, modId)
+    end
+
+    function proxy.getTextOrNull(id, args)
+        return proxy.l10n.getTextOrNull(id, args, modId)
     end
 
     return proxy
