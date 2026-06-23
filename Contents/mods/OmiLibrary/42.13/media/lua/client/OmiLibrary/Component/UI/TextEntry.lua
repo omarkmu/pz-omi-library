@@ -1369,7 +1369,7 @@ function TextEntry:new(args)
     this:setSuggestBox(args.suggestBox, true)
 
     this.callbacks = {}
-    local target = args.target
+    local target = args.target or (args.targetSelf and this or nil)
     this:setOnKey(args.onKeyTarget or target, args.onKey, unpack(args.onKeyArgs or {}))
     this:setOnBlur(args.onBlurTarget or target, args.onBlur, unpack(args.onBlurArgs or {}))
     this:setOnFocus(args.onFocusTarget or target, args.onFocus, unpack(args.onFocusArgs or {}))
@@ -1449,6 +1449,7 @@ return TextEntry
 ---@field validateArgs? table Arguments for `validate`.
 ---@field validateTarget? any The first argument to pass to the `validate` callback.
 ---@field target? any The default first argument to use for callbacks when a target is unspecified.
+---@field targetSelf? boolean Flag for whether the default first argument for callbacks should be the created instance.
 
 ---@class InitArgs.TextEntry : Args.TextEntry, InitArgs.Shared
 

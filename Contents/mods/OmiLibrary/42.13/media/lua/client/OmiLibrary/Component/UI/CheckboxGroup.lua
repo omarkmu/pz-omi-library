@@ -233,7 +233,7 @@ function CheckboxGroup:new(args)
         this:setFont(font)
     end
 
-    local target = args.onChangeTarget or args.target
+    local target = args.onChangeTarget or args.target or (args.targetSelf and this or nil)
     this.callbacks = {}
     this.changeOptionTarget = this
     this.changeOptionMethod = this._onChange
@@ -287,6 +287,7 @@ return CheckboxGroup
 ---@field onChangeArgs? table Arguments for `onChange`.
 ---@field onChangeTarget? any The first argument to pass to the `onChange` callback.
 ---@field target? any The default first argument to use for callbacks when a target is unspecified.
+---@field targetSelf? boolean Flag for whether the default first argument for callbacks should be the created instance.
 
 ---@class Args.CheckboxGroup : Args.CheckboxGroup.Base
 ---@field items? Checkbox.ItemOrString[] Items to include in the checkbox group.

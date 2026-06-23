@@ -74,7 +74,7 @@ function Dropdown:new(args)
 
     this.callbacks = {}
 
-    local target = args.onChangeTarget or args.target
+    local target = args.onChangeTarget or args.target or (args.targetSelf and this or nil)
     this.target = this
     this.onChange = this._onChange
     this:setOnChange(target, args.onChange, unpack(args.onChangeArgs or {}))
@@ -102,6 +102,7 @@ return Dropdown
 ---@field onChangeArgs? table Arguments for `onChange`.
 ---@field onChangeTarget? any The first argument to pass to the `onChange` callback.
 ---@field target? any The default first argument to use for callbacks when a target is unspecified.
+---@field targetSelf? boolean Flag for whether the default first argument for callbacks should be the created instance.
 
 ---@class InitArgs.Dropdown : Args.Dropdown, InitArgs.Shared
 ---@field options? Dropdown.OptionOrString[] Options to include in the dropdown.

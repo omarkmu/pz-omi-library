@@ -370,10 +370,11 @@ function ObjectArrayPanel:new(args)
         this.maxTooltip = getText('@error.max-items-reached', { max = this.maxItems })
     end
 
-    this:setOnAdd(args.onAddTarget or args.target, args.onAdd, unpack(args.onAddArgs or {}))
-    this:setOnDelete(args.onDeleteTarget or args.target, args.onDelete, unpack(args.onDeleteArgs or {}))
-    this:setOnSelect(args.onSelectTarget or args.target, args.onSelect, unpack(args.onSelectArgs or {}))
-    this:setOnMove(args.onMoveTarget or args.target, args.onMove, unpack(args.onMoveArgs or {}))
+    local defaultTarget = args.target or (args.targetSelf and this or nil)
+    this:setOnAdd(args.onAddTarget or defaultTarget, args.onAdd, unpack(args.onAddArgs or {}))
+    this:setOnDelete(args.onDeleteTarget or defaultTarget, args.onDelete, unpack(args.onDeleteArgs or {}))
+    this:setOnSelect(args.onSelectTarget or defaultTarget, args.onSelect, unpack(args.onSelectArgs or {}))
+    this:setOnMove(args.onMoveTarget or defaultTarget, args.onMove, unpack(args.onMoveArgs or {}))
 
     return this
 end

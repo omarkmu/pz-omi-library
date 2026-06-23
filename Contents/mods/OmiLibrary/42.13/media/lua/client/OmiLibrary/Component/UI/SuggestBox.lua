@@ -367,9 +367,10 @@ function SuggestBox:new(args)
     this.refocusOverScrollbar = args.refocusOverScrollbar or false
     this.populateAfterInsert = args.populateAfterInsert or false
 
+    local defaultTarget = args.target or (args.targetSelf and this or nil)
     this:setFont(args.font or UIFont.Medium)
-    this:setOnInsert(args.onInsertTarget or args.target, args.onInsert, unpack(args.onInsertArgs or {}))
-    this:setOnPopulate(args.populateTarget or args.target, args.populate, unpack(args.populateArgs or {}))
+    this:setOnInsert(args.onInsertTarget or defaultTarget, args.onInsert, unpack(args.onInsertArgs or {}))
+    this:setOnPopulate(args.populateTarget or defaultTarget, args.populate, unpack(args.populateArgs or {}))
 
     if args.entry then
         args.entry:setSuggestBox(this, true)

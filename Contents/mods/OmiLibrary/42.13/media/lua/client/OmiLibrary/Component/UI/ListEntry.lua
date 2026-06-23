@@ -495,8 +495,9 @@ function ListEntry:new(args)
     this.deleteBtnTransition = UITransition.new()
 
     this.callbacks = {}
-    this:setOnAdd(args.addTarget or args.target, args.add, unpack(args.addArgs or {}))
-    this:setOnChange(args.onChangeTarget or args.target, args.onChange, unpack(args.onChangeArgs or {}))
+    local defaultTarget = args.target or (args.targetSelf and this or nil)
+    this:setOnAdd(args.addTarget or defaultTarget, args.add, unpack(args.addArgs or {}))
+    this:setOnChange(args.onChangeTarget or defaultTarget, args.onChange, unpack(args.onChangeArgs or {}))
 
     return this
 end

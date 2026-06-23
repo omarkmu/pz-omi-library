@@ -115,8 +115,9 @@ function PlayerCache:new(args)
 
     local this = core.new(self, Cache.new, args)
 
+    local defaultTarget = args.target or (args.targetSelf and this or nil)
     this:setOnCreatePlayerData(
-        args.onCreatePlayerDataTarget or args.target,
+        args.onCreatePlayerDataTarget or defaultTarget,
         args.onCreatePlayerData,
         unpack(args.onCreatePlayerDataArgs or {})
     )

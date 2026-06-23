@@ -447,9 +447,10 @@ function ListBox:new(args)
 
     this.callbacks = {}
 
-    local drawTarget = args.drawTarget or args.target
-    local dbClickTarget = args.onDoubleClickTarget or args.target
-    local mouseDownTarget = args.onMouseDownTarget or args.target
+    local defaultTarget = args.target or (args.targetSelf and this or nil)
+    local drawTarget = args.drawTarget or defaultTarget
+    local dbClickTarget = args.onDoubleClickTarget or defaultTarget
+    local mouseDownTarget = args.onMouseDownTarget or defaultTarget
     this.target = this
     this.onmousedown = this._onMouseDown
     this.onmousedblclick = this._onDoubleClick
@@ -493,6 +494,7 @@ return ListBox
 ---@field onMouseDownArgs? table Arguments for `onMouseDown`.
 ---@field onMouseDownTarget? any The first argument to pass to the `onMouseDown` callback.
 ---@field target? any The default first argument to use for callbacks when a target is unspecified.
+---@field targetSelf? boolean Flag for whether the default first argument for callbacks should be the created instance.
 
 ---@class InitArgs.ListBox : Args.ListBox, InitArgs.Shared
 ---@field items? (string | InitArgs.ListBoxItem)[] Items to include in the listbox.

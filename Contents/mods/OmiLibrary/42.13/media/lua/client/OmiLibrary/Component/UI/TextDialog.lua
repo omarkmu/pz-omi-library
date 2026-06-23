@@ -373,7 +373,7 @@ function TextDialog:new(args)
 
     local this = UI.new(self, Dialog.new, args)
 
-    local target = args.validateTarget or args.target
+    local target = args.validateTarget or args.target or (args.targetSelf and this or nil)
     this.init.validateCallback = core.callback(target, args.validate, unpack(args.validateArgs or {}))
     this.init.defaultEntryText = args.defaultText
     this.init.tooltipText = args.tooltip

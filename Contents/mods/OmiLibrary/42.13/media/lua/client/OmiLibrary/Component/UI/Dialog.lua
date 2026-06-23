@@ -571,8 +571,9 @@ function Dialog:new(args)
     this.borderColor = core.color.defaultRGBA(args.borderColor, 0.4, 0.4, 0.4, 1)
     this.richText = args.richText or false
 
+    local defaultTarget = args.target or (args.targetSelf and this or nil)
     this.callbacks = {}
-    this:setOnClick(args.onClickTarget or args.target, args.onClick, unpack(args.onClickArgs or {}))
+    this:setOnClick(args.onClickTarget or defaultTarget, args.onClick, unpack(args.onClickArgs or {}))
     this:setOnResize(args.onResizeTarget or args.target, args.onResize, unpack(args.onResizeArgs or {}))
 
     this.minBtnW = 0
@@ -611,6 +612,7 @@ return Dialog
 ---@field onResizeArgs? table Arguments for `onResize`.
 ---@field onResizeTarget? table The first argument to pass to the `onResize` callback.
 ---@field target? any The default first argument to use for callbacks when a target is unspecified.
+---@field targetSelf? boolean Flag for whether the default first argument for callbacks should be the created instance.
 
 ---@class Args.Dialog.Click
 ---@field button ISButton The button that was clicked.

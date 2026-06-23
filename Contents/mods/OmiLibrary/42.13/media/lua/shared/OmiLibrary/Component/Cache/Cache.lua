@@ -386,8 +386,9 @@ function Cache:new(args)
         this._indexes[indexKeys[i]] = {}
     end
 
+    local defaultTarget = args.target or (args.targetSelf and this or nil)
     this.callbacks = {}
-    this:setOnCreateItem(args.onCreateItemTarget or args.target, args.onCreateItem, unpack(args.onCreateItemArgs or {}))
+    this:setOnCreateItem(args.onCreateItemTarget or defaultTarget, args.onCreateItem, unpack(args.onCreateItemArgs or {}))
 
     return this
 end
@@ -406,6 +407,7 @@ return Cache
 ---@field onCreateItemArgs? table Arguments for `onCreateItem`.
 ---@field onCreateItemTarget? any The first argument to pass to the `onCreateItem` callback.
 ---@field target? any The default first argument to use for callbacks when a target is unspecified.
+---@field targetSelf? boolean Flag for whether the default first argument for callbacks should be the created instance.
 
 ---@class Args.Cache<TData> : Args.Cache.Base<TData>
 ---@field primaryKey string The primary key to index cache items by.

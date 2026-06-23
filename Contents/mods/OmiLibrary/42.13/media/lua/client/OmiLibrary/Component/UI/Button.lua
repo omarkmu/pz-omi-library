@@ -172,6 +172,7 @@ function Button:new(args)
     this.textColor = args.textColor or this.textColor
     this.textureColor = args.textureColor or this.textureColor
 
+    local defaultTarget = args.target or (args.targetSelf and this or nil)
     this.callbacks = {}
     this.onClickArgs = {}
     this.target = this
@@ -179,11 +180,11 @@ function Button:new(args)
     this.onmousedown = this._onMouseDown
     this.onmouseoutfunction = this._onMouseOut
     this.onmouseover = this._onMouseOver
-    this:setOnClick(args.onClickTarget or args.target, args.onClick, unpack(args.onClickArgs or {}))
-    this:setOnMouseDown(args.onMouseDownTarget or args.target, args.onMouseDown, unpack(args.onMouseDownArgs or {}))
-    this:setOnMouseOut(args.onMouseOutTarget or args.target, args.onMouseOut, unpack(args.onMouseOutArgs or {}))
-    this:setOnMouseOver(args.onMouseOverTarget or args.target, args.onMouseOver, unpack(args.onMouseOverArgs or {}))
-    this:setOnResize(args.onResizeTarget or args.target, args.onResize, unpack(args.onResizeArgs or {}))
+    this:setOnClick(args.onClickTarget or defaultTarget, args.onClick, unpack(args.onClickArgs or {}))
+    this:setOnMouseDown(args.onMouseDownTarget or defaultTarget, args.onMouseDown, unpack(args.onMouseDownArgs or {}))
+    this:setOnMouseOut(args.onMouseOutTarget or defaultTarget, args.onMouseOut, unpack(args.onMouseOutArgs or {}))
+    this:setOnMouseOver(args.onMouseOverTarget or defaultTarget, args.onMouseOver, unpack(args.onMouseOverArgs or {}))
+    this:setOnResize(args.onResizeTarget or defaultTarget, args.onResize, unpack(args.onResizeArgs or {}))
 
     if args.setWidthToText then
         this:setWidthToTitle(this.minimumWidth)
@@ -237,6 +238,7 @@ return Button
 ---@field onClickArgs? table Arguments for `onClick`.
 ---@field onClickTarget? any The first argument to pass to the `onClick` callback.
 ---@field target? any The default first argument to use for callbacks when a target is unspecified.
+---@field targetSelf? boolean Flag for whether the default first argument for callbacks should be the created instance.
 
 ---@class InitArgs.Button : Args.Button, InitArgs.Shared
 

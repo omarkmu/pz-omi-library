@@ -1509,8 +1509,9 @@ function RichTextPanel:new(args)
     this.g = this.defaultTextColor.g
     this.b = this.defaultTextColor.b
 
-    this:setOnAction(args.onActionTarget or args.target, args.onAction, unpack(args.onActionArgs or {}))
-    this:setOnUpdate(args.onUpdateTarget or args.target, args.onUpdate, unpack(args.onUpdateArgs or {}))
+    local defaultTarget = args.target or (args.targetSelf and this or nil)
+    this:setOnAction(args.onActionTarget or defaultTarget, args.onAction, unpack(args.onActionArgs or {}))
+    this:setOnUpdate(args.onUpdateTarget or defaultTarget, args.onUpdate, unpack(args.onUpdateArgs or {}))
 
     this:resetState()
     this.textDirty = true

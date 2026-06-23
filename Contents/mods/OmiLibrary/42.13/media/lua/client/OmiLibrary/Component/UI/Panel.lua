@@ -91,8 +91,9 @@ function Panel:new(args)
     this.doOriginalRender = true
     this.doRepaintStencil = args.doRepaintStencil or false
 
+    local defaultTarget = args.target or (args.targetSelf and this or nil)
     this.callbacks = {}
-    this:setOnResize(args.onResizeTarget or args.target, args.onResize, unpack(args.onResizeArgs or {}))
+    this:setOnResize(args.onResizeTarget or defaultTarget, args.onResize, unpack(args.onResizeArgs or {}))
 
     return this
 end
@@ -115,6 +116,7 @@ return Panel
 ---@field onResizeArgs? table Arguments for `onResize`.
 ---@field onResizeTarget? any The first argument to pass to the `onResize` callback.
 ---@field target? any The default first argument to use for callbacks when a target is unspecified.
+---@field targetSelf? boolean Flag for whether the default first argument for callbacks should be the created instance.
 
 ---@class InitArgs.Panel : Args.Panel, InitArgs.Shared
 
