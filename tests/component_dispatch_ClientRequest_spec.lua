@@ -4,7 +4,7 @@
 
 local ClientRequest = require 'OmiLibrary/Component/Dispatch/ClientRequest'
 local Dispatcher = require 'OmiLibrary/Component/Dispatch/Dispatcher'
-local Topic = require 'OmiLibrary/Component/Dispatch/Topic'
+local Channel = require 'OmiLibrary/Component/Dispatch/Channel'
 
 describe('#component ClientRequest', function()
     describe('#constructor', function()
@@ -16,13 +16,13 @@ describe('#component ClientRequest', function()
 
     describe('#method', function()
         local dispatch ---@type Dispatcher
-        local topic ---@type Topic
-        local adminTopic ---@type Topic
+        local channel ---@type Channel
+        local adminChannel ---@type Channel
         local player ---@type IsoPlayer
         setup(function()
             dispatch = Dispatcher:new({ module = 'modname' })
-            topic = dispatch:topic('TOPIC')
-            adminTopic = dispatch:topic('ADMIN_TOPIC', { requireAdmin = true })
+            channel = dispatch:channel('CHANNEL')
+            adminChannel = dispatch:channel('ADMIN_CHANNEL', { requireAdmin = true })
 
             player = zomboid.player()
         end)
@@ -31,7 +31,7 @@ describe('#component ClientRequest', function()
 
         local req ---@type ClientRequest
         before_each(function()
-            req = ClientRequest:new({ topic = topic, player = player })
+            req = ClientRequest:new({ channel = channel, player = player })
         end)
 
         describe('canReceive', function()
@@ -40,11 +40,11 @@ describe('#component ClientRequest', function()
             before_each(function()
                 isValid = true
                 validationErr = nil
-                stub(Topic, 'validateOnServer', function() return isValid, validationErr end):auto_revert()
+                stub(Channel, 'validateOnServer', function() return isValid, validationErr end):auto_revert()
             end)
 
             it('returns false and an error message if the player has insufficient permissions', function()
-                req = ClientRequest:new({ topic = adminTopic, player = player })
+                req = ClientRequest:new({ channel = adminChannel, player = player })
 
                 local canReceive, reason = req:canReceive()
 
@@ -76,8 +76,8 @@ describe('#component ClientRequest', function()
                 assert.is_nil(reason)
             end)
 
-            it('returns true when receiving an admin-only topic from an admin player', function()
-                req = ClientRequest:new({ topic = adminTopic, player = player })
+            it('returns true when receiving a request on an admin-only channel from an admin player', function()
+                req = ClientRequest:new({ channel = adminChannel, player = player })
 
                 stub(player, 'isAccessLevel')
                     :auto_revert()
@@ -92,11 +92,11 @@ describe('#component ClientRequest', function()
 
         describe('canSend', function()
             local _validateOnClient ---@type luassert.spy
-            before_each(function() _validateOnClient = stub(Topic, 'validateOnClient', true) end)
+            before_each(function() _validateOnClient = stub(Channel, 'validateOnClient', true) end)
             after_each(function() _validateOnClient:revert() end)
 
             it('returns false and an error message if the player has insufficient permissions', function()
-                req = ClientRequest:new({ topic = adminTopic, player = player })
+                req = ClientRequest:new({ channel = adminChannel, player = player })
 
                 local canSend, reason = req:canSend()
 
@@ -115,7 +115,7 @@ describe('#component ClientRequest', function()
 
             it('returns false and the validation error message when client validation fails', function()
                 _validateOnClient:revert()
-                _validateOnClient = stub(Topic, 'validateOnClient', false, 'Invalid arguments')
+                _validateOnClient = stub(Channel, 'validateOnClient', false, 'Invalid arguments')
 
                 local canSend, reason = req:canSend()
 
@@ -125,7 +125,7 @@ describe('#component ClientRequest', function()
 
             it('returns false and a generic error message when client validation fails with no message', function()
                 _validateOnClient:revert()
-                _validateOnClient = stub(Topic, 'validateOnClient', false)
+                _validateOnClient = stub(Channel, 'validateOnClient', false)
 
                 local canSend, reason = req:canSend()
 
@@ -140,12 +140,12 @@ describe('#component ClientRequest', function()
                 assert.is_nil(reason)
             end)
 
-            it('returns true when sending an admin-only topic as an admin player', function()
+            it('returns true when sending a request on an admin-only channel as an admin player', function()
                 stub(player, 'isAccessLevel')
                     :auto_revert()
                     .on_call_with(player, 'Admin').returns(true)
 
-                req = ClientRequest:new({ topic = adminTopic, player = player })
+                req = ClientRequest:new({ channel = adminChannel, player = player })
                 local canSend, reason = req:canSend()
 
                 assert.is_true(canSend)

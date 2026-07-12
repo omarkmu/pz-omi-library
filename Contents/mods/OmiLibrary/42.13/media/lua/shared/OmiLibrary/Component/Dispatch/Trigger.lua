@@ -41,7 +41,7 @@ function Trigger.everyMinute()
 end
 
 ---Trigger to send a request every `interval` milliseconds.
----@param interval integer The interval on which the topic should trigger.
+---@param interval integer The interval on which a request should be sent on the channel.
 ---@return Trigger
 function Trigger.onInterval(interval)
     local options = { interval = interval } ---@type TriggerOptions.Interval
@@ -93,7 +93,7 @@ return Trigger
 ---@field event string The event to listen for.
 
 ---@class TriggerOptions.Interval
----@field interval integer The interval on which the topic should trigger.
+---@field interval integer The interval on which on which a request should be sent on the channel.
 
 ---@class TriggerOptions.PlayerDeath
 ---@field onlyPlayer1 boolean If `true`, the condition will trigger only for player 1.

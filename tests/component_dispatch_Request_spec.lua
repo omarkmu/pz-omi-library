@@ -6,18 +6,18 @@ local Request = require 'OmiLibrary/Component/Dispatch/Request'
 local ClientRequest = require 'OmiLibrary/Component/Dispatch/ClientRequest'
 local ServerRequest = require 'OmiLibrary/Component/Dispatch/ServerRequest'
 local Dispatcher = require 'OmiLibrary/Component/Dispatch/Dispatcher'
-local Topic = require 'OmiLibrary/Component/Dispatch/Topic'
+local Channel = require 'OmiLibrary/Component/Dispatch/Channel'
 
 describe('#component Request', function()
     local dispatch ---@type Dispatcher
-    local topic ---@type Topic
-    local otherTopic ---@type Topic
+    local channel ---@type Channel
+    local otherChannel ---@type Channel
     local player ---@type IsoPlayer
     local mockUsername = 'username'
     setup(function()
         dispatch = Dispatcher:new({ module = 'modname' })
-        topic = dispatch:topic('TOPIC')
-        otherTopic = dispatch:topic('OTHER_TOPIC')
+        channel = dispatch:channel('CHANNEL')
+        otherChannel = dispatch:channel('OTHER_CHANNEL')
 
         player = zomboid.player({ username = mockUsername }) --[[@as IsoPlayer]]
     end)
@@ -27,7 +27,7 @@ describe('#component Request', function()
     describe('#method', function()
         local req ---@type Request
         before_each(function()
-            req = ClientRequest:new({ topic = topic, player = player })
+            req = ClientRequest:new({ channel = channel, player = player })
         end)
 
         describe('canReceive', function()
@@ -42,7 +42,7 @@ describe('#component Request', function()
             end)
 
             it('returns false and an error message for an incoming request', function()
-                req = ClientRequest:new({ topic = topic, player = player, isIncoming = true })
+                req = ClientRequest:new({ channel = channel, player = player, isIncoming = true })
 
                 local canSend, reason = Request.canSend(req)
                 assert.is_false(canSend)
@@ -50,7 +50,7 @@ describe('#component Request', function()
             end)
 
             it('returns false and an error message for a request that has already been sent', function()
-                req = ClientRequest:new({ topic = topic, player = player, isSent = true })
+                req = ClientRequest:new({ channel = channel, player = player, isSent = true })
 
                 local canSend, reason = Request.canSend(req)
                 assert.is_false(canSend)
@@ -58,7 +58,7 @@ describe('#component Request', function()
             end)
 
             it('returns false and no error message for a cancelled request', function()
-                req = ClientRequest:new({ topic = topic, player = player })
+                req = ClientRequest:new({ channel = channel, player = player })
                 req:cancel()
 
                 local canSend, reason = Request.canSend(req)
@@ -68,24 +68,24 @@ describe('#component Request', function()
         end)
 
         describe('broadcast', function()
-            it('sends a broadcast on the request topic', function()
-                local _broadcast = stub(Topic, 'broadcast'):auto_revert()
+            it('sends a broadcast on the request channel', function()
+                local _broadcast = stub(Channel, 'broadcast'):auto_revert()
 
                 local args = {}
                 req:broadcast(args)
 
-                assert.spy(_broadcast).called_with(match.ref(topic), match.ref(args), match.ref(req))
+                assert.spy(_broadcast).called_with(match.ref(channel), match.ref(args), match.ref(req))
             end)
         end)
 
         describe('broadcastOn', function()
-            it('sends a broadcast on the given topic', function()
-                local _broadcast = stub(Topic, 'broadcast'):auto_revert()
+            it('sends a broadcast on the given channel', function()
+                local _broadcast = stub(Channel, 'broadcast'):auto_revert()
 
                 local args = {}
-                req:broadcastOn(otherTopic, args)
+                req:broadcastOn(otherChannel, args)
 
-                assert.spy(_broadcast).called_with(match.ref(otherTopic), match.ref(args), match.ref(req))
+                assert.spy(_broadcast).called_with(match.ref(otherChannel), match.ref(args), match.ref(req))
             end)
         end)
 
@@ -93,6 +93,12 @@ describe('#component Request', function()
             it('marks the request as cancelled', function()
                 req:cancel()
                 assert.is_true(req:isCancelled())
+            end)
+        end)
+
+        describe('getChannel', function()
+            it('returns the channel of the request', function()
+                assert.equal(channel, req:getChannel())
             end)
         end)
 
@@ -142,12 +148,6 @@ describe('#component Request', function()
             end)
         end)
 
-        describe('getTopic', function()
-            it('returns the topic of the request', function()
-                assert.equal(topic, req:getTopic())
-            end)
-        end)
-
         describe('hasTriedToSend', function()
             it('returns false if the request has not attempted sending', function()
                 assert.is_false(req:hasTriedToSend())
@@ -188,7 +188,7 @@ describe('#component Request', function()
             end)
 
             it('returns true for incoming requests', function()
-                req = ClientRequest:new({ topic = topic, player = player, isIncoming = true })
+                req = ClientRequest:new({ channel = channel, player = player, isIncoming = true })
                 assert.is_true(req:isIncoming())
             end)
         end)
@@ -199,7 +199,7 @@ describe('#component Request', function()
             end)
 
             it('returns true for reply requests', function()
-                req = ClientRequest:new({ topic = topic, player = player, isReply = true })
+                req = ClientRequest:new({ channel = channel, player = player, isReply = true })
                 assert.is_true(req:isReply())
             end)
         end)
@@ -210,49 +210,49 @@ describe('#component Request', function()
             end)
 
             it('returns true for sent requests', function()
-                req = ClientRequest:new({ topic = topic, player = player, isSent = true })
+                req = ClientRequest:new({ channel = channel, player = player, isSent = true })
                 assert.is_true(req:isSent())
             end)
         end)
 
         describe('reply', function()
-            it('sends a reply on the request topic', function()
+            it('sends a reply on the request channel', function()
                 local _replyWith = stub(Request, 'replyWith'):auto_revert()
 
                 local args = {}
                 req:reply(args)
 
-                assert.spy(_replyWith).called_with(match.ref(req), match.ref(topic), match.ref(args))
+                assert.spy(_replyWith).called_with(match.ref(req), match.ref(channel), match.ref(args))
             end)
         end)
 
         describe('replyWith', function()
             describe('on the client', function()
-                it('calls toServer on the topic', function()
-                    local _toServer = stub(Topic, 'toServer'):auto_revert()
+                it('calls toServer on the channel', function()
+                    local _toServer = stub(Channel, 'toServer'):auto_revert()
 
                     local args = {}
-                    req = ServerRequest:new({ topic = topic })
-                    req:replyWith(otherTopic, args)
+                    req = ServerRequest:new({ channel = channel })
+                    req:replyWith(otherChannel, args)
 
-                    assert.spy(_toServer).called_with(match.ref(otherTopic), match.ref(args), match.ref(req))
+                    assert.spy(_toServer).called_with(match.ref(otherChannel), match.ref(args), match.ref(req))
                 end)
             end)
 
             describe('on the server', function()
                 before_each(function()
-                    req = ClientRequest:new({ topic = topic, player = player })
+                    req = ClientRequest:new({ channel = channel, player = player })
                 end)
 
-                it('calls toPlayer on the topic', function()
-                    local _toPlayer = stub(Topic, 'toPlayer'):auto_revert()
+                it('calls toPlayer on the channel', function()
+                    local _toPlayer = stub(Channel, 'toPlayer'):auto_revert()
 
                     local args = {}
 
-                    req:replyWith(otherTopic, args)
+                    req:replyWith(otherChannel, args)
 
                     assert.spy(_toPlayer).called_with(
-                        match.ref(otherTopic),
+                        match.ref(otherChannel),
                         match.ref(player),
                         match.ref(args),
                         match.ref(req)
@@ -262,7 +262,7 @@ describe('#component Request', function()
                 it('fails if the request has no player', function()
                     req._player = nil
 
-                    local success, err = req:replyWith(topic)
+                    local success, err = req:replyWith(channel)
 
                     assert.is_false(success)
                     assert.equal('No target player', err)
@@ -280,11 +280,11 @@ describe('#component Request', function()
                 req:send(args)
 
                 assert.same({}, args)
-                assert.spy(s).called_with('modname', 'TOPIC', expected)
+                assert.spy(s).called_with('modname', 'CHANNEL', expected)
             end)
 
             it('adds a flag to the request arguments for replies', function()
-                req = ClientRequest:new({ topic = topic, player = player, isReply = true })
+                req = ClientRequest:new({ channel = channel, player = player, isReply = true })
 
                 local args = {}
                 local expected = { ['$__EXID'] = req:getExchangeId(), ['$__REPLY'] = req:isReply() }
@@ -294,34 +294,34 @@ describe('#component Request', function()
                 req:send(args)
 
                 assert.same({}, args)
-                assert.spy(s).called_with('modname', 'TOPIC', expected)
+                assert.spy(s).called_with('modname', 'CHANNEL', expected)
             end)
 
             it('calls sendClientCommand on the client', function()
                 local s = spy.on(_G, 'sendClientCommand')
 
-                req = ClientRequest:new({ topic = topic, player = player })
+                req = ClientRequest:new({ channel = channel, player = player })
                 req:send()
 
-                assert.spy(s).called_with('modname', 'TOPIC', match.table())
+                assert.spy(s).called_with('modname', 'CHANNEL', match.table())
             end)
 
             it('calls sendServerCommand with the request player on the server', function()
                 local s = spy.on(_G, 'sendServerCommand')
 
-                req = ServerRequest:new({ topic = topic, player = player })
+                req = ServerRequest:new({ channel = channel, player = player })
                 req:send()
 
-                assert.spy(s).called_with(match.ref(player), 'modname', 'TOPIC', match.table())
+                assert.spy(s).called_with(match.ref(player), 'modname', 'CHANNEL', match.table())
             end)
 
             it('calls sendServerCommand as a broadcast when the request has no player on the server', function()
                 local s = spy.on(_G, 'sendServerCommand')
 
-                req = ServerRequest:new({ topic = topic })
+                req = ServerRequest:new({ channel = channel })
                 req:send()
 
-                assert.spy(s).called_with('modname', 'TOPIC', match.table())
+                assert.spy(s).called_with('modname', 'CHANNEL', match.table())
             end)
         end)
     end)
@@ -329,7 +329,7 @@ describe('#component Request', function()
     describe('#operation', function()
         local req ---@type Request
         before_each(function()
-            req = ClientRequest:new({ topic = topic, player = player, args = { flag = true } })
+            req = ClientRequest:new({ channel = channel, player = player, args = { flag = true } })
         end)
 
         describe('__tostring', function()
@@ -337,12 +337,12 @@ describe('#component Request', function()
                 assert.is_string(tostring(req))
             end)
 
-            it('calls stringifyArgs on the request topic for request arguments', function()
-                local _stringifyArgs = stub(Topic, 'stringifyArgs'):auto_revert()
+            it('calls stringifyArgs on the request channel for request arguments', function()
+                local _stringifyArgs = stub(Channel, 'stringifyArgs'):auto_revert()
 
                 assert.is_string(tostring(req))
 
-                assert.spy(_stringifyArgs).called_with(match.ref(topic), match.ref(req))
+                assert.spy(_stringifyArgs).called_with(match.ref(channel), match.ref(req))
             end)
         end)
     end)

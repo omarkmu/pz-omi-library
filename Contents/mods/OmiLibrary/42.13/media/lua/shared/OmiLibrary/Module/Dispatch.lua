@@ -1,7 +1,7 @@
 ---Module for dispatching and receiving commands.
 ---@namespace omi
 
-local Topic = require 'OmiLibrary/Component/Dispatch/Topic'
+local Channel = require 'OmiLibrary/Component/Dispatch/Channel'
 local Trigger = require 'OmiLibrary/Component/Dispatch/Trigger'
 local Request = require 'OmiLibrary/Component/Dispatch/Request'
 local Dispatcher = require 'OmiLibrary/Component/Dispatch/Dispatcher'
@@ -13,7 +13,7 @@ local ServerRequest = require 'OmiLibrary/Component/Dispatch/ServerRequest'
 ---@overload fun(options: Args.Dispatcher): Dispatcher
 local dispatch = {}
 dispatch.Dispatcher = Dispatcher
-dispatch.Topic = Topic
+dispatch.Channel = Channel
 dispatch.Trigger = Trigger
 dispatch.Request = Request
 dispatch.ClientRequest = ClientRequest

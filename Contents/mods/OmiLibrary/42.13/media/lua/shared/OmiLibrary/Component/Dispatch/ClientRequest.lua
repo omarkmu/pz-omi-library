@@ -13,15 +13,15 @@ local ClientRequest = Request:derive('ClientRequest')
 ---@return boolean canReceive Whether the request can be received.
 ---@return string? reason The reason the request cannot be received.
 function ClientRequest:canReceive()
-    local topic = self._topic
+    local channel = self._channel
     local player = self._player
 
-    local requireAdmin = topic:isRequireAdmin() and not self:isSingleplayer()
+    local requireAdmin = channel:isRequireAdmin() and not self:isSingleplayer()
     if requireAdmin and (not player or not player:isAccessLevel('Admin')) then
         return false, 'Insufficient permissions'
     end
 
-    local success, err = topic:validateOnServer(self)
+    local success, err = channel:validateOnServer(self)
     if not success then
         return false, err or 'Validation failed'
     end
@@ -33,21 +33,21 @@ end
 ---@return boolean canSend Whether the request can be sent.
 ---@return string? reason The reason the request cannot be sent. If `canSend` is `false` and this is absent, the request was cancelled.
 function ClientRequest:canSend()
-    local topic = self._topic
+    local channel = self._channel
     local player = self._player
 
-    local requireAdmin = topic:isRequireAdmin() and not self:isSingleplayer()
+    local requireAdmin = channel:isRequireAdmin() and not self:isSingleplayer()
     if requireAdmin and (not player or not player:isAccessLevel('Admin')) then
         return false, 'Insufficient permissions'
     end
 
-    if not topic:isAllowDead() then
+    if not channel:isAllowDead() then
         if not player or player:isDead() then
             return false, 'Player character is dead'
         end
     end
 
-    local success, err = topic:validateOnClient(self)
+    local success, err = channel:validateOnClient(self)
     if not success then
         return false, err or 'Validation failed'
     end

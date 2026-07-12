@@ -1,4 +1,4 @@
----A request made to the client or server for a topic.
+---A request made to the client or server on a channel.
 ---@namespace omi
 
 local core = require 'OmiLibrary/Module/Utils'
@@ -17,7 +17,7 @@ local REQ_REPLY_FAIL = 'Cannot send reply for %s: %s'
 
 ---@class Request : Class
 ---@field args table Arguments sent with the request.
----@field protected _topic Topic The topic of the request.
+---@field protected _channel Channel The channel of the request.
 ---@field protected _dispatcher Dispatcher The dispatcher that handles the request.
 ---@field protected _errors string[] Errors that occurred on the request.
 ---@field protected _isCancelled boolean Whether the request has been cancelled.
@@ -54,27 +54,33 @@ function Request:canSend()
     return true
 end
 
----Responds to the request on the same topic with a broadcast to all players.
+---Responds to the request on the same channel with a broadcast to all players.
 ---@param args table? Arguments to send with the response.
 ---@return boolean success Whether the broadcast was successfully sent.
 ---@return string? error The error that occurred.
 function Request:broadcast(args)
-    return self._topic:broadcast(args, self)
+    return self._channel:broadcast(args, self)
 end
 
----Responds to the request on the given topic with a broadcast to all players.
----@param topic Topic The topic to broadcast.
+---Responds to the request on the given channel with a broadcast to all players.
+---@param channel Channel The channel to broadcast.
 ---@param args table? Arguments to send with the response.
 ---@return boolean success Whether the broadcast was successfully sent.
 ---@return string? error The error that occurred.
-function Request:broadcastOn(topic, args)
-    return topic:broadcast(args, self)
+function Request:broadcastOn(channel, args)
+    return channel:broadcast(args, self)
 end
 
 ---Marks the request as cancelled, preventing it from sending.
 function Request:cancel()
     self._isCancelled = true
     self:_log(REQ_CANCELLED, self)
+end
+
+---Returns the channel associated with the request.
+---@return Channel
+function Request:getChannel()
+    return self._channel
 end
 
 ---Returns a list of errors that occurred while trying to send a request.
@@ -105,12 +111,6 @@ end
 ---@return integer
 function Request:getSendAttempts()
     return self._sendAttempts
-end
-
----Returns the topic associated with the request.
----@return Topic
-function Request:getTopic()
-    return self._topic
 end
 
 ---Returns whether the request has attempted sending already.
@@ -163,25 +163,25 @@ function Request:isSingleplayer()
     return IS_SINGLEPLAYER
 end
 
----Responds to the request on the same topic.
+---Responds to the request on the same channel.
 ---@param args table? Arguments to send with the response.
 ---@return boolean success Whether the reply was successfully sent.
 ---@return string? error The error that occurred.
 function Request:reply(args)
-    return self:replyWith(self._topic, args)
+    return self:replyWith(self._channel, args)
 end
 
----Responds to the request with the given topic.
----@param topic Topic The topic to reply on.
+---Responds to the request with the given channel.
+---@param channel Channel The channel to reply on.
 ---@param args table? Arguments to send with the response.
 ---@return boolean success Whether the reply was successfully sent.
 ---@return string? error The error that occurred.
-function Request:replyWith(topic, args)
+function Request:replyWith(channel, args)
     args = args or {}
 
     -- server → client → server
     if self:isFromServer() then
-        return topic:toServer(args, self)
+        return channel:toServer(args, self)
     end
 
     -- client → server → client
@@ -194,7 +194,7 @@ function Request:replyWith(topic, args)
         return false, err
     end
 
-    return topic:toPlayer(player, args, self)
+    return channel:toPlayer(player, args, self)
 end
 
 ---Sends the request.
@@ -222,7 +222,7 @@ function Request:send(args)
         args['$__REPLY'] = true
     end
 
-    local module, command = self._topic:getModuleAndName()
+    local module, command = self._channel:getModuleAndName()
 
     -- server → client
     if self:isFromServer() then
@@ -274,7 +274,7 @@ function Request:__tostring()
     local result = {
         self:isFromServer() and 'ServerRequest' or 'ClientRequest',
         '<',
-        self._topic:getName(),
+        self._channel:getName(),
         ', exchangeId=',
         id,
     }
@@ -286,7 +286,7 @@ function Request:__tostring()
 
     if not isempty(self.args) then
         result[#result + 1] = ', '
-        result[#result + 1] = self._topic:stringifyArgs(self)
+        result[#result + 1] = self._channel:stringifyArgs(self)
     end
 
     result[#result + 1] = '>'
@@ -304,9 +304,9 @@ function Request:new(args)
     this.args = core.copy(args.args or {})
 
     this._errors = {}
-    this._topic = args.topic
+    this._channel = args.channel
     this._player = args.player
-    this._dispatcher = this._topic:getDispatcher()
+    this._dispatcher = this._channel:getDispatcher()
     this._sendAttempts = 0
     this._isCancelled = false
     this._isReply = args.isReply or false
@@ -328,7 +328,7 @@ return Request
 --#region Type Definitions
 
 ---@class Args.Request
----@field topic Topic The topic of the request.
+---@field channel Channel The channel of the request.
 ---@field args? table Arguments sent with the request.
 ---@field isIncoming? boolean If `true`, the request is an incoming request.
 ---@field isReply? boolean If `true`, the request is a reply.

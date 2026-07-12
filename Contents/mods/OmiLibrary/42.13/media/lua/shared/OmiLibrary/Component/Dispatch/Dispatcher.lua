@@ -2,7 +2,7 @@
 ---@namespace omi
 
 local core = require 'OmiLibrary/Module/Utils'
-local Topic = require 'OmiLibrary/Component/Dispatch/Topic'
+local Channel = require 'OmiLibrary/Component/Dispatch/Channel'
 local Trigger = require 'OmiLibrary/Component/Dispatch/Trigger'
 local ClientRequest = require 'OmiLibrary/Component/Dispatch/ClientRequest'
 local ServerRequest = require 'OmiLibrary/Component/Dispatch/ServerRequest'
@@ -12,8 +12,8 @@ local IS_SERVER = isServer()
 
 local REQ_RECEIVE = 'Received %s'
 local REQ_RECEIVE_FAIL = 'Cannot receive %s: %s'
-local TOPIC_ADD = '%s added to %s'
-local TOPIC_UNKNOWN = 'Ignoring request with unknown topic %q'
+local CHANNEL_ADD = '%s added to %s'
+local CHANNEL_UNKNOWN = 'Ignoring request on unknown channel %q'
 local TRIGGER_ADD = '%s trigger added for %s'
 local TRIGGER_ACTIVATE = '%s trigger activated for %s'
 local TRIGGER_UNKNOWN = 'Ignoring unknown trigger %s for %s'
@@ -21,67 +21,67 @@ local TRIGGER_UNKNOWN = 'Ignoring unknown trigger %s for %s'
 
 ---@class Dispatcher : Class
 ---@field protected _module string The module identifier used for commands.
----@field protected _topics table<string, Topic> Map of commands to topics.
+---@field protected _channels table<string, Channel> Map of commands to channels.
 ---@field protected _clientListener? function Listener function for receiving server commands.
 ---@field protected _serverListener? function Listener function for receiving client commands.
 ---@field protected _eventListeners table<string, function?> Map of listener names to listeners.
----@field protected _triggers table<Trigger.Type, table<Topic, table>> Associates triggers to tables containing per-topic trigger state.
+---@field protected _triggers table<Trigger.Type, table<Channel, table>> Associates triggers to tables containing per-channel trigger state.
 ---@field protected _log? Logger The logger to use.
 ---@field protected _runInSingleplayer boolean Flag for whether requests should be processed in singleplayer.
 local Dispatcher = core.class('Dispatcher')
 Dispatcher.trigger = Trigger
 
 
----Adds a trigger to a topic.
----@param topic Topic
+---Adds a trigger to a channel.
+---@param channel Channel
 ---@param trigger Trigger
-function Dispatcher:addTrigger(topic, trigger)
-    if topic:getDispatcher() ~= self then
+function Dispatcher:addTrigger(channel, trigger)
+    if channel:getDispatcher() ~= self then
         return
     end
 
     if trigger.type == Trigger.Type.Interval then
-        self:_triggerOnInterval(topic, trigger.options)
+        self:_triggerOnInterval(channel, trigger.options)
     elseif trigger.type == Trigger.Type.PlayerDeath then
-        self:_triggerOnPlayerDeath(topic, trigger.options)
+        self:_triggerOnPlayerDeath(channel, trigger.options)
     elseif trigger.type == Trigger.Type.PlayerJoined then
-        self:_triggerOnPlayerJoined(topic)
+        self:_triggerOnPlayerJoined(channel)
     elseif trigger.type == Trigger.Type.EveryDay then
-        self:_triggerOnEvent(topic, trigger.type, 'EveryDays')
+        self:_triggerOnEvent(channel, trigger.type, 'EveryDays')
     elseif trigger.type == Trigger.Type.EveryHour then
-        self:_triggerOnEvent(topic, trigger.type, 'EveryHours')
+        self:_triggerOnEvent(channel, trigger.type, 'EveryHours')
     elseif trigger.type == Trigger.Type.EveryTenMinutes then
-        self:_triggerOnEvent(topic, trigger.type, 'EveryTenMinutes')
+        self:_triggerOnEvent(channel, trigger.type, 'EveryTenMinutes')
     elseif trigger.type == Trigger.Type.EveryMinute then
-        self:_triggerOnEvent(topic, trigger.type, 'EveryOneMinute')
+        self:_triggerOnEvent(channel, trigger.type, 'EveryOneMinute')
     else
-        self:log(TRIGGER_UNKNOWN, trigger.type, topic)
+        self:log(TRIGGER_UNKNOWN, trigger.type, channel)
         return
     end
 
-    self:log(TRIGGER_ADD, trigger.type, topic)
+    self:log(TRIGGER_ADD, trigger.type, channel)
 end
 
 ---Broadcasts a signal to all players. Can only be used on the server.
----@param topic Topic The topic of the request.
+---@param channel Channel The channel of the request.
 ---@param args table? Arguments to send with the request.
 ---@param source Request? The source of the request, if this is a reply.
 ---@return boolean success
 ---@return string? error
-function Dispatcher:broadcast(topic, args, source)
+function Dispatcher:broadcast(channel, args, source)
     if IS_CLIENT then
         error('Dispatcher.broadcast cannot be used on the client')
     end
 
     local req = ServerRequest:new {
-        topic = topic,
+        channel = channel,
         args = args,
         isReply = source ~= nil,
         exchangeId = source and source:getExchangeId(),
     }
 
     local attempts = req:getSendAttempts()
-    topic:onServerSend(req)
+    channel:onServerSend(req)
     return self:_trySend(req, attempts)
 end
 
@@ -89,6 +89,25 @@ end
 ---@return boolean
 function Dispatcher:canRunInSingleplayer()
     return self._runInSingleplayer
+end
+
+---Creates a new channel for the dispatcher to handle.
+---@param name string The unique name of the channel.
+---@param options Args.Channel.Partial? Options for the channel.
+---@return Channel
+function Dispatcher:channel(name, options)
+    options = core.copy(options)
+
+    ---@cast options Args.Channel
+    options.dispatcher = self
+    options.name = name
+
+    local channel = Channel:new(options)
+
+    self._channels[name] = channel
+
+    self:log(CHANNEL_ADD, channel, self)
+    return channel
 end
 
 ---Connects the dispatcher to listen for commands.
@@ -132,6 +151,13 @@ function Dispatcher:disconnect()
     end
 end
 
+---Returns an existing channel on the dispatcher.
+---@param name string
+---@return Channel?
+function Dispatcher:getChannel(name)
+    return self._channels[name]
+end
+
 ---Returns the module name to use for the dispatcher.
 ---@return string
 function Dispatcher:getModule()
@@ -141,14 +167,11 @@ end
 ---Returns the player to use for outgoing requests.
 ---@return IsoPlayer?
 function Dispatcher:getRequestPlayer()
-    return getSpecificPlayer(0)
-end
+    if IS_SERVER then
+        return
+    end
 
----Returns an existing topic on the dispatcher.
----@param name string
----@return Topic?
-function Dispatcher:getTopic(name)
-    return self._topics[name]
+    return getSpecificPlayer(0)
 end
 
 ---Logs a debug message to the logger, if present.
@@ -163,19 +186,19 @@ function Dispatcher:log(message, ...)
 end
 
 ---Sends a request to the server. Can only be used on the server.
----@param topic Topic The topic of request.
+---@param channel Channel The channel of request.
 ---@param player IsoPlayer The player to send the request to.
 ---@param args table? Arguments to send with the request.
 ---@param source Request? The source of the request, if this is a reply.
 ---@return boolean success
 ---@return string? error
-function Dispatcher:toPlayer(topic, player, args, source)
+function Dispatcher:toPlayer(channel, player, args, source)
     if IS_CLIENT then
         error('Dispatcher.toPlayer cannot be used on the client')
     end
 
     local req = ServerRequest:new {
-        topic = topic,
+        channel = channel,
         player = player,
         args = args,
         isReply = source ~= nil,
@@ -183,17 +206,17 @@ function Dispatcher:toPlayer(topic, player, args, source)
     }
 
     local attempts = req:getSendAttempts()
-    topic:onServerSend(req)
+    channel:onServerSend(req)
     return self:_trySend(req, attempts)
 end
 
 ---Sends a request to the server. Can only be used on the client.
----@param topic Topic The topic of the request.
+---@param channel Channel The channel of the request.
 ---@param args table? Arguments to send with the request.
 ---@param source Request? The source of the request, if this is a reply.
 ---@return boolean success
 ---@return string? error
-function Dispatcher:toServer(topic, args, source)
+function Dispatcher:toServer(channel, args, source)
     if IS_SERVER then
         error('Dispatcher.toServer cannot be used on the server')
     end
@@ -204,7 +227,7 @@ function Dispatcher:toServer(topic, args, source)
     end
 
     local req = ClientRequest:new {
-        topic = topic,
+        channel = channel,
         args = args,
         player = player,
         isReply = source ~= nil,
@@ -212,27 +235,8 @@ function Dispatcher:toServer(topic, args, source)
     }
 
     local attempts = req:getSendAttempts()
-    topic:onClientSend(req)
+    channel:onClientSend(req)
     return self:_trySend(req, attempts)
-end
-
----Creates a new Topic for the dispatcher to handle.
----@param name string The unique name of the topic.
----@param options Args.Topic.Partial? Options for the topic.
----@return Topic
-function Dispatcher:topic(name, options)
-    options = core.copy(options)
-
-    ---@cast options Args.Topic
-    options.dispatcher = self
-    options.name = name
-
-    local topic = Topic:new(options)
-
-    self._topics[name] = topic
-
-    self:log(TOPIC_ADD, topic, self)
-    return topic
 end
 
 
@@ -242,56 +246,56 @@ end
 ---@param event string
 ---@protected
 function Dispatcher:_onEvent(triggerType, event)
-    ---@type table<Topic, TriggerOptions.Event>
+    ---@type table<Channel, TriggerOptions.Event>
     local state = self._triggers[triggerType]
     if not state then
         return
     end
 
-    for topic, opts in pairs(state) do
+    for channel, opts in pairs(state) do
         if opts.event == event then
-            self:log(TRIGGER_ACTIVATE, triggerType, topic)
+            self:log(TRIGGER_ACTIVATE, triggerType, channel)
 
-            local target = IS_SERVER and topic.broadcast or topic.toServer
-            target(topic --[[@as any]])
+            local target = IS_SERVER and channel.broadcast or channel.toServer
+            target(channel --[[@as any]])
         end
     end
 end
 
----Called when on interval for a topic with an interval trigger.
----@param topic Topic
+---Called on interval for a channel with an interval trigger.
+---@param channel Channel
 ---@protected
-function Dispatcher:_onInterval(topic)
+function Dispatcher:_onInterval(channel)
     local state = self._triggers[Trigger.Type.Interval]
-    if not state or not state[topic] then
+    if not state or not state[channel] then
         return
     end
 
-    self:log(TRIGGER_ACTIVATE, Trigger.Type.Interval, topic)
-    local target = IS_SERVER and topic.broadcast or topic.toServer
-    target(topic --[[@as any]])
+    self:log(TRIGGER_ACTIVATE, Trigger.Type.Interval, channel)
+    local target = IS_SERVER and channel.broadcast or channel.toServer
+    target(channel --[[@as any]])
 end
 
----Called when a player dies, if a topic with the PlayerDeath trigger exists.
+---Called when a player dies, if a channel with the PlayerDeath trigger exists.
 ---@param player IsoPlayer
 ---@protected
 function Dispatcher:_onPlayerDeath(player)
-    ---@type table<Topic, TriggerOptions.PlayerDeath>
+    ---@type table<Channel, TriggerOptions.PlayerDeath>
     local state = self._triggers[Trigger.Type.PlayerDeath]
     if not state then
         return
     end
 
     local isPlayer1 = player:getPlayerNum() == 0
-    for topic, opts in pairs(state) do
+    for channel, opts in pairs(state) do
         if not opts.onlyPlayer1 or isPlayer1 then
-            self:log(TRIGGER_ACTIVATE, Trigger.Type.PlayerDeath, topic)
-            topic:toServer()
+            self:log(TRIGGER_ACTIVATE, Trigger.Type.PlayerDeath, channel)
+            channel:toServer()
         end
     end
 end
 
----Called every tick until a player object is available, if a topic with the PlayerJoined trigger exists.
+---Called every tick until a player object is available, if a channel with the PlayerJoined trigger exists.
 ---@protected
 function Dispatcher:_onPlayerJoinedCheck()
     local state = self._triggers[Trigger.Type.PlayerJoined]
@@ -308,9 +312,9 @@ function Dispatcher:_onPlayerJoinedCheck()
         self._eventListeners.OnTick = nil
     end
 
-    for topic in pairs(state) do
-        self:log(TRIGGER_ACTIVATE, Trigger.Type.PlayerJoined, topic)
-        topic:toServer()
+    for channel in pairs(state) do
+        self:log(TRIGGER_ACTIVATE, Trigger.Type.PlayerJoined, channel)
+        channel:toServer()
     end
 end
 
@@ -326,9 +330,9 @@ function Dispatcher:_onReceive(isFromServer, module, command, args, player)
         return
     end
 
-    local topic = self._topics[command]
-    if not topic then
-        self:log(TOPIC_UNKNOWN, command)
+    local channel = self._channels[command]
+    if not channel then
+        self:log(CHANNEL_UNKNOWN, command)
         return
     end
 
@@ -346,7 +350,7 @@ function Dispatcher:_onReceive(isFromServer, module, command, args, player)
     local req
     if isFromServer then
         req = ServerRequest:new {
-            topic = topic,
+            channel = channel,
             args = args,
             isIncoming = true,
             isReply = isReply,
@@ -354,7 +358,7 @@ function Dispatcher:_onReceive(isFromServer, module, command, args, player)
         }
     else
         req = ClientRequest:new {
-            topic = topic,
+            channel = channel,
             args = args,
             player = player --[[@as IsoPlayer]],
             isIncoming = true,
@@ -375,23 +379,23 @@ function Dispatcher:_onReceive(isFromServer, module, command, args, player)
     self:log(REQ_RECEIVE, req)
 
     if isFromServer then
-        topic:onClientReceive(req --[[@as ServerRequest]])
+        channel:onClientReceive(req --[[@as ServerRequest]])
     else
-        topic:onServerReceive(req --[[@as ClientRequest]])
+        channel:onServerReceive(req --[[@as ClientRequest]])
     end
 end
 
----Sets up an event trigger for a topic.
----@param topic Topic
+---Sets up an event trigger for a channel.
+---@param channel Channel
 ---@param triggerType Trigger.Type
 ---@param event string
 ---@protected
-function Dispatcher:_triggerOnEvent(topic, triggerType, event)
+function Dispatcher:_triggerOnEvent(channel, triggerType, event)
     self._triggers[triggerType] = self._triggers[triggerType] or {}
 
-    ---@type table<Topic, TriggerOptions.Event>
+    ---@type table<Channel, TriggerOptions.Event>
     local state = self._triggers[triggerType]
-    state[topic] = { event = event }
+    state[channel] = { event = event }
 
     if self._eventListeners[event] then
         return
@@ -404,31 +408,31 @@ function Dispatcher:_triggerOnEvent(topic, triggerType, event)
     end
 end
 
----Sets up an interval trigger for a topic.
----@param topic Topic
+---Sets up an interval trigger for a channel.
+---@param channel Channel
 ---@param opts TriggerOptions.Interval
 ---@protected
-function Dispatcher:_triggerOnInterval(topic, opts)
+function Dispatcher:_triggerOnInterval(channel, opts)
     self._triggers[Trigger.Type.Interval] = self._triggers[Trigger.Type.Interval] or {}
 
     local state = self._triggers[Trigger.Type.Interval]
 
     -- clear existing interval if present
-    local timer = state[topic] and state[topic].timer ---@type Timer?
+    local timer = state[channel] and state[channel].timer ---@type Timer?
     if timer then
         timer:cancel()
     end
 
     -- start new interval
-    timer = core.setInterval(opts.interval, self._onInterval, self, topic)
-    state[topic] = { timer = timer }
+    timer = core.setInterval(opts.interval, self._onInterval, self, channel)
+    state[channel] = { timer = timer }
 end
 
----Sets up a player death trigger for a topic.
----@param topic Topic
+---Sets up a player death trigger for a channel.
+---@param channel Channel
 ---@param opts TriggerOptions.PlayerDeath
 ---@protected
-function Dispatcher:_triggerOnPlayerDeath(topic, opts)
+function Dispatcher:_triggerOnPlayerDeath(channel, opts)
     if IS_SERVER then
         -- no-op on server
         return
@@ -437,7 +441,7 @@ function Dispatcher:_triggerOnPlayerDeath(topic, opts)
     self._triggers[Trigger.Type.PlayerDeath] = self._triggers[Trigger.Type.PlayerDeath] or {}
 
     local state = self._triggers[Trigger.Type.PlayerDeath]
-    state[topic] = opts
+    state[channel] = opts
 
     if self._eventListeners.OnPlayerDeath then
         return
@@ -447,10 +451,10 @@ function Dispatcher:_triggerOnPlayerDeath(topic, opts)
     Events.OnPlayerDeath.Add(self._eventListeners.OnPlayerDeath)
 end
 
----Sets up a player join trigger for a topic.
----@param topic Topic
+---Sets up a player join trigger for a channel.
+---@param channel Channel
 ---@protected
-function Dispatcher:_triggerOnPlayerJoined(topic)
+function Dispatcher:_triggerOnPlayerJoined(channel)
     if IS_SERVER then
         -- no-op on server
         return
@@ -459,7 +463,7 @@ function Dispatcher:_triggerOnPlayerJoined(topic)
     self._triggers[Trigger.Type.PlayerJoined] = self._triggers[Trigger.Type.PlayerJoined] or {}
 
     local state = self._triggers[Trigger.Type.PlayerJoined]
-    state[topic] = {}
+    state[channel] = {}
 
     if self._eventListeners.OnTick then
         return
@@ -503,7 +507,7 @@ end
 function Dispatcher:new(options)
     local this = core.new(self)
 
-    this._topics = {}
+    this._channels = {}
     this._triggers = {}
     this._eventListeners = {}
     this._module = options.module

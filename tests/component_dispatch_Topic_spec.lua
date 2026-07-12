@@ -1,8 +1,8 @@
----Contains tests for the Topic component.
+---Contains tests for the Channel component.
 ---@using omi
 ---@diagnostic disable: access-invisible, duplicate-require
 
-local Topic = require 'OmiLibrary/Component/Dispatch/Topic'
+local Channel = require 'OmiLibrary/Component/Dispatch/Channel'
 local ClientRequest = require 'OmiLibrary/Component/Dispatch/ClientRequest'
 local ServerRequest = require 'OmiLibrary/Component/Dispatch/ServerRequest'
 local Dispatcher = require 'OmiLibrary/Component/Dispatch/Dispatcher'
@@ -10,23 +10,23 @@ local Dispatcher = require 'OmiLibrary/Component/Dispatch/Dispatcher'
 ---Helper function to switch to a server context.
 local function switchToServer()
     zomboid.set_is_server()
-    Topic = reload_module('OmiLibrary/Component/Dispatch/Topic')
+    Channel = reload_module('OmiLibrary/Component/Dispatch/Channel')
     Dispatcher = reload_module('OmiLibrary/Component/Dispatch/Dispatcher')
 end
 
 ---Helper function to switch back from a server context.
 local function switchToClient()
     zomboid.revert_is_server()
-    Topic = reload_module('OmiLibrary/Component/Dispatch/Topic')
+    Channel = reload_module('OmiLibrary/Component/Dispatch/Channel')
     Dispatcher = reload_module('OmiLibrary/Component/Dispatch/Dispatcher')
 end
 
-describe('#component Topic', function()
+describe('#component Channel', function()
     local dispatch ---@type Dispatcher
-    local topic ---@type Topic
+    local channel ---@type Channel
     before_each(function()
         dispatch = Dispatcher:new({ module = 'modname' })
-        topic = dispatch:topic('TOPIC')
+        channel = dispatch:channel('CHANNEL')
     end)
 
     describe('#constructor', function()
@@ -39,7 +39,7 @@ describe('#component Topic', function()
 
             _addTrigger = stub(Dispatcher, 'addTrigger'):auto_revert()
 
-            topic = dispatch:topic('TOPIC', {
+            channel = dispatch:channel('CHANNEL', {
                 clientTriggers = { clientTrigger },
                 serverTriggers = { serverTrigger },
             })
@@ -47,11 +47,11 @@ describe('#component Topic', function()
 
         describe('when used on the client', function()
             it('adds client triggers to the dispatcher', function()
-                assert.spy(_addTrigger).called_with(match.ref(dispatch), match.ref(topic), match.ref(clientTrigger))
+                assert.spy(_addTrigger).called_with(match.ref(dispatch), match.ref(channel), match.ref(clientTrigger))
             end)
 
             it('does not add server triggers to the dispatcher', function()
-                assert.spy(_addTrigger).not_called_with(match.ref(dispatch), match.ref(topic), match.ref(serverTrigger))
+                assert.spy(_addTrigger).not_called_with(match.ref(dispatch), match.ref(channel), match.ref(serverTrigger))
             end)
         end)
 
@@ -60,11 +60,11 @@ describe('#component Topic', function()
             teardown(switchToClient)
 
             it('adds server triggers to the dispatcher', function()
-                assert.spy(_addTrigger).called_with(match.ref(dispatch), match.ref(topic), match.ref(serverTrigger))
+                assert.spy(_addTrigger).called_with(match.ref(dispatch), match.ref(channel), match.ref(serverTrigger))
             end)
 
             it('does not add client triggers to the dispatcher', function()
-                assert.spy(_addTrigger).not_called_with(match.ref(dispatch), match.ref(topic), match.ref(clientTrigger))
+                assert.spy(_addTrigger).not_called_with(match.ref(dispatch), match.ref(channel), match.ref(clientTrigger))
             end)
         end)
     end)
@@ -76,12 +76,12 @@ describe('#component Topic', function()
 
                 local args = {}
                 local source = {}
-                topic:broadcast(args, source --[[@as Request]])
+                channel:broadcast(args, source --[[@as Request]])
 
                 assert.spy(_broadcast).called(1)
                 assert.spy(_broadcast).called_with(
                     match.ref(dispatch),
-                    match.ref(topic),
+                    match.ref(channel),
                     match.ref(args),
                     match.ref(source)
                 )
@@ -90,75 +90,75 @@ describe('#component Topic', function()
 
         describe('canLogArgs', function()
             it('returns true if unset in arguments', function()
-                assert.is_true(topic:canLogArgs())
+                assert.is_true(channel:canLogArgs())
             end)
 
             it('returns true if set to true in argument', function()
-                topic = dispatch:topic('TOPIC', { canLogArgs = true })
-                assert.is_true(topic:canLogArgs())
+                channel = dispatch:channel('CHANNEL', { canLogArgs = true })
+                assert.is_true(channel:canLogArgs())
             end)
 
             it('returns false if set to false in argument', function()
-                topic = dispatch:topic('TOPIC', { canLogArgs = false })
-                assert.is_false(topic:canLogArgs())
+                channel = dispatch:channel('CHANNEL', { canLogArgs = false })
+                assert.is_false(channel:canLogArgs())
             end)
         end)
 
         describe('getDispatcher', function()
             it('returns the dispatcher', function()
-                assert.equal(dispatch, topic:getDispatcher())
+                assert.equal(dispatch, channel:getDispatcher())
             end)
         end)
 
         describe('getName', function()
-            it('returns the topic name', function()
-                assert.equal('TOPIC', topic:getName())
+            it('returns the channel name', function()
+                assert.equal('CHANNEL', channel:getName())
             end)
         end)
 
         describe('getModule', function()
             it('returns the dispatcher module', function()
-                assert.equal('modname', topic:getModule())
+                assert.equal('modname', channel:getModule())
             end)
         end)
 
         describe('getModuleAndName', function()
-            it('returns the dispatcher module and topic name', function()
-                local module, name = topic:getModuleAndName()
+            it('returns the dispatcher module and channel name', function()
+                local module, name = channel:getModuleAndName()
                 assert.equal('modname', module)
-                assert.equal('TOPIC', name)
+                assert.equal('CHANNEL', name)
             end)
         end)
 
         describe('isAllowDead', function()
             it('returns false if unset in arguments', function()
-                assert.is_false(topic:isAllowDead())
+                assert.is_false(channel:isAllowDead())
             end)
 
             it('returns true if set to true in argument', function()
-                topic = dispatch:topic('TOPIC', { allowDead = true })
-                assert.is_true(topic:isAllowDead())
+                channel = dispatch:channel('CHANNEL', { allowDead = true })
+                assert.is_true(channel:isAllowDead())
             end)
 
             it('returns false if set to false in argument', function()
-                topic = dispatch:topic('TOPIC', { allowDead = false })
-                assert.is_false(topic:isAllowDead())
+                channel = dispatch:channel('CHANNEL', { allowDead = false })
+                assert.is_false(channel:isAllowDead())
             end)
         end)
 
         describe('isRequireAdmin', function()
             it('returns false if unset in arguments', function()
-                assert.is_false(topic:isRequireAdmin())
+                assert.is_false(channel:isRequireAdmin())
             end)
 
             it('returns true if set to true in argument', function()
-                topic = dispatch:topic('TOPIC', { requireAdmin = true })
-                assert.is_true(topic:isRequireAdmin())
+                channel = dispatch:channel('CHANNEL', { requireAdmin = true })
+                assert.is_true(channel:isRequireAdmin())
             end)
 
             it('returns false if set to false in argument', function()
-                topic = dispatch:topic('TOPIC', { requireAdmin = false })
-                assert.is_false(topic:isRequireAdmin())
+                channel = dispatch:channel('CHANNEL', { requireAdmin = false })
+                assert.is_false(channel:isRequireAdmin())
             end)
         end)
 
@@ -169,13 +169,13 @@ describe('#component Topic', function()
                 _onReceive = spy.new()
                 _onClientReceive = spy.new()
 
-                topic = dispatch:topic('TOPIC', {
+                channel = dispatch:channel('CHANNEL', {
                     onReceive = _onReceive --[[@as function]],
                     onClientReceive = _onClientReceive --[[@as function]],
                 })
 
                 local req = {}
-                topic:onClientReceive(req --[[@as Request]])
+                channel:onClientReceive(req --[[@as Request]])
             end)
 
             it('calls the onReceive callback', function()
@@ -194,14 +194,14 @@ describe('#component Topic', function()
                 _onSend = spy.new()
                 _onClientSend = spy.new()
 
-                topic = dispatch:topic('TOPIC', {
+                channel = dispatch:channel('CHANNEL', {
                     onSend = _onSend --[[@as function]],
                     onClientSend = _onClientSend --[[@as function]],
                 })
 
                 local player = {}
-                local req = ClientRequest:new({ topic = topic, player = player --[[@as IsoPlayer]] })
-                topic:onClientSend(req)
+                local req = ClientRequest:new({ channel = channel, player = player --[[@as IsoPlayer]] })
+                channel:onClientSend(req)
             end)
 
             it('calls the onSend callback', function()
@@ -220,13 +220,13 @@ describe('#component Topic', function()
                 _onReceive = spy.new()
                 _onServerReceive = spy.new()
 
-                topic = dispatch:topic('TOPIC', {
+                channel = dispatch:channel('CHANNEL', {
                     onReceive = _onReceive --[[@as function]],
                     onServerReceive = _onServerReceive --[[@as function]],
                 })
 
                 local req = {}
-                topic:onServerReceive(req --[[@as Request]])
+                channel:onServerReceive(req --[[@as Request]])
             end)
 
             it('calls the onReceive callback', function()
@@ -245,13 +245,13 @@ describe('#component Topic', function()
                 _onSend = spy.new()
                 _onServerSend = spy.new()
 
-                topic = dispatch:topic('TOPIC', {
+                channel = dispatch:channel('CHANNEL', {
                     onSend = _onSend --[[@as function]],
                     onServerSend = _onServerSend --[[@as function]],
                 })
 
                 local req = {}
-                topic:onServerSend(req --[[@as Request]])
+                channel:onServerSend(req --[[@as Request]])
             end)
 
             it('calls the onSend callback', function()
@@ -272,42 +272,42 @@ describe('#component Topic', function()
                 _onStringifyClientArgs = spy.new()
                 _onStringifyServerArgs = spy.new()
 
-                topic = dispatch:topic('TOPIC', {
+                channel = dispatch:channel('CHANNEL', {
                     onStringifyArgs = _onStringifyArgs --[[@as function]],
                     onStringifyClientArgs = _onStringifyClientArgs --[[@as function]],
                     onStringifyServerArgs = _onStringifyServerArgs --[[@as function]],
                 })
             end)
 
-            it('returns a table with an ellipsis if the topic cannot log arguments', function()
-                topic = dispatch:topic('TOPIC', { canLogArgs = false })
+            it('returns a table with an ellipsis if the channel cannot log arguments', function()
+                channel = dispatch:channel('CHANNEL', { canLogArgs = false })
 
-                local req = ServerRequest:new({ topic = topic })
-                assert.equal('{...}', topic:stringifyArgs(req))
+                local req = ServerRequest:new({ channel = channel })
+                assert.equal('{...}', channel:stringifyArgs(req))
             end)
 
             it('returns a table with an ellipsis if the callback returns an empty string', function()
-                topic = dispatch:topic('TOPIC', {
+                channel = dispatch:channel('CHANNEL', {
                     onStringifyArgs = function() return '' end,
                 })
 
-                local req = ServerRequest:new({ topic = topic })
-                assert.equal('{...}', topic:stringifyArgs(req))
+                local req = ServerRequest:new({ channel = channel })
+                assert.equal('{...}', channel:stringifyArgs(req))
             end)
 
             it('returns the result from the callback', function()
-                topic = dispatch:topic('TOPIC', {
+                channel = dispatch:channel('CHANNEL', {
                     onStringifyArgs = function() return '{ <private> }' end,
                 })
 
-                local req = ServerRequest:new({ topic = topic })
-                assert.equal('{ <private> }', topic:stringifyArgs(req))
+                local req = ServerRequest:new({ channel = channel })
+                assert.equal('{ <private> }', channel:stringifyArgs(req))
             end)
 
             it('calls the correct callback for a request from the server', function()
-                local req = ServerRequest:new({ topic = topic })
+                local req = ServerRequest:new({ channel = channel })
 
-                topic:stringifyArgs(req)
+                channel:stringifyArgs(req)
 
                 assert.spy(_onStringifyArgs).not_called()
                 assert.spy(_onStringifyClientArgs).not_called()
@@ -316,9 +316,9 @@ describe('#component Topic', function()
 
             it('calls the correct callback for a request from the client', function()
                 local player = {}
-                local req = ClientRequest:new({ topic = topic, player = player --[[@as IsoPlayer]] })
+                local req = ClientRequest:new({ channel = channel, player = player --[[@as IsoPlayer]] })
 
-                topic:stringifyArgs(req)
+                channel:stringifyArgs(req)
 
                 assert.spy(_onStringifyArgs).not_called()
                 assert.spy(_onStringifyClientArgs).called(1)
@@ -327,9 +327,9 @@ describe('#component Topic', function()
 
             it('logs an error if JSON encoding arguments fails', function()
                 local _log = spy.on(Dispatcher, 'log')
-                local req = ServerRequest:new({ topic = topic, args = { f = function() end } })
+                local req = ServerRequest:new({ channel = channel, args = { f = function() end } })
 
-                topic:stringifyArgs(req)
+                channel:stringifyArgs(req)
 
                 assert.spy(_log).called(1)
             end)
@@ -342,12 +342,12 @@ describe('#component Topic', function()
                 local player = {}
                 local args = {}
                 local source = {}
-                topic:toPlayer(player --[[@as IsoPlayer]], args, source --[[@as Request]])
+                channel:toPlayer(player --[[@as IsoPlayer]], args, source --[[@as Request]])
 
                 assert.spy(_toPlayer).called(1)
                 assert.spy(_toPlayer).called_with(
                     match.ref(dispatch),
-                    match.ref(topic),
+                    match.ref(channel),
                     match.ref(player),
                     match.ref(args),
                     match.ref(source)
@@ -362,12 +362,12 @@ describe('#component Topic', function()
                 local player = {}
                 local args = {}
                 local source = {}
-                topic:toPlayerOrBroadcast(player --[[@as IsoPlayer]], args, source --[[@as Request]])
+                channel:toPlayerOrBroadcast(player --[[@as IsoPlayer]], args, source --[[@as Request]])
 
                 assert.spy(_toPlayer).called(1)
                 assert.spy(_toPlayer).called_with(
                     match.ref(dispatch),
-                    match.ref(topic),
+                    match.ref(channel),
                     match.ref(player),
                     match.ref(args),
                     match.ref(source)
@@ -379,12 +379,12 @@ describe('#component Topic', function()
 
                 local args = {}
                 local source = {}
-                topic:toPlayerOrBroadcast(nil, args, source --[[@as Request]])
+                channel:toPlayerOrBroadcast(nil, args, source --[[@as Request]])
 
                 assert.spy(_broadcast).called(1)
                 assert.spy(_broadcast).called_with(
                     match.ref(dispatch),
-                    match.ref(topic),
+                    match.ref(channel),
                     match.ref(args),
                     match.ref(source)
                 )
@@ -397,12 +397,12 @@ describe('#component Topic', function()
 
                 local args = {}
                 local source = {}
-                topic:toServer(args, source --[[@as Request]])
+                channel:toServer(args, source --[[@as Request]])
 
                 assert.spy(_toServer).called(1)
                 assert.spy(_toServer).called_with(
                     match.ref(dispatch),
-                    match.ref(topic),
+                    match.ref(channel),
                     match.ref(args),
                     match.ref(source)
                 )
@@ -420,35 +420,35 @@ describe('#component Topic', function()
                 _onValidate = spy.new(function() return true end)
                 _onClientValidate = spy.new(function() return true end)
 
-                topic = dispatch:topic('TOPIC', {
+                channel = dispatch:channel('CHANNEL', {
                     onValidate = _onValidate --[[@as function]],
                     onClientValidate = _onClientValidate --[[@as function]],
                 })
             end)
 
             it('returns true if no callbacks are given', function()
-                topic = dispatch:topic('TOPIC')
-                assert.is_true(topic:validateOnClient(req))
+                channel = dispatch:channel('CHANNEL')
+                assert.is_true(channel:validateOnClient(req))
             end)
 
             it('calls the onValidate callback', function()
-                topic:validateOnClient(req)
+                channel:validateOnClient(req)
                 assert.spy(_onValidate).called(1)
             end)
 
             it('calls the onClientValidate callback', function()
-                topic:validateOnClient(req)
+                channel:validateOnClient(req)
                 assert.spy(_onClientValidate).called(1)
             end)
 
             it('does not the onClientValidate callback if the onValidate callback fails', function()
                 local s = spy.new(function() return false end)
-                topic = dispatch:topic('TOPIC', {
+                channel = dispatch:channel('CHANNEL', {
                     onValidate = s --[[@as function]],
                     onClientValidate = _onClientValidate --[[@as function]],
                 })
 
-                topic:validateOnClient(req)
+                channel:validateOnClient(req)
                 assert.spy(s).called(1)
                 assert.spy(_onClientValidate).not_called()
             end)
@@ -465,35 +465,35 @@ describe('#component Topic', function()
                 _onValidate = spy.new(function() return true end)
                 _onServerValidate = spy.new(function() return true end)
 
-                topic = dispatch:topic('TOPIC', {
+                channel = dispatch:channel('CHANNEL', {
                     onValidate = _onValidate --[[@as function]],
                     onServerValidate = _onServerValidate --[[@as function]],
                 })
             end)
 
             it('returns true if no callbacks are given', function()
-                topic = dispatch:topic('TOPIC')
-                assert.is_true(topic:validateOnServer(req))
+                channel = dispatch:channel('CHANNEL')
+                assert.is_true(channel:validateOnServer(req))
             end)
 
             it('calls the onValidate callback', function()
-                topic:validateOnServer(req)
+                channel:validateOnServer(req)
                 assert.spy(_onValidate).called(1)
             end)
 
             it('calls the onServerValidate callback', function()
-                topic:validateOnServer(req)
+                channel:validateOnServer(req)
                 assert.spy(_onServerValidate).called(1)
             end)
 
             it('does not the onServerValidate callback if the onValidate callback fails', function()
                 local s = spy.new(function() return false end)
-                topic = dispatch:topic('TOPIC', {
+                channel = dispatch:channel('CHANNEL', {
                     onValidate = s --[[@as function]],
                     onServerValidate = _onServerValidate --[[@as function]],
                 })
 
-                topic:validateOnServer(req)
+                channel:validateOnServer(req)
                 assert.spy(s).called(1)
                 assert.spy(_onServerValidate).not_called()
             end)
@@ -502,10 +502,10 @@ describe('#component Topic', function()
 
     describe('#operation', function()
         describe('__tostring', function()
-            it('returns the topic as a string', function()
-                local result = tostring(topic)
+            it('returns the channel as a string', function()
+                local result = tostring(channel)
                 assert.is_string(result)
-                assert.equal('Topic<TOPIC>', result)
+                assert.equal('Channel<CHANNEL>', result)
             end)
         end)
     end)
