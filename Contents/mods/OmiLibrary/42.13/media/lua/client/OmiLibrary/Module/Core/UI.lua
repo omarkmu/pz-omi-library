@@ -263,6 +263,32 @@ function UI.init(element, args)
     end
 end
 
+---Performs initialization logic for listboxes.
+---@param element ListBox
+---@param args InitArgs.ListBox
+function UI.initListBox(element, args)
+    local items = args.items or {} --[[@as (string | InitArgs.ListBoxItem)[] ]]
+    for i = 1, #items do
+        local itemArgs = items[i]
+        if type(itemArgs) ~= 'table' then
+            itemArgs = {
+                item = itemArgs,
+                text = tostring(itemArgs),
+            }
+        end
+
+        local item = element:addItem(itemArgs.text, itemArgs.item)
+        item.tooltip = itemArgs.tooltip
+        item.textColor = itemArgs.textColor
+        item.textColorDisabled = itemArgs.textColorDisabled
+        item.texture = itemArgs.texture
+        item.textureColor = itemArgs.textureColor
+        item.textureColorDisabled = itemArgs.textureColorDisabled
+    end
+
+    UI.init(element, args)
+end
+
 ---Creates and initializes a label element.
 ---@param args InitArgs.Label
 ---@return Label
@@ -309,26 +335,7 @@ function UI.listBox(args)
     listbox:initialise()
     listbox:instantiate()
 
-    local items = args.items or {} --[[@as (string | InitArgs.ListBoxItem)[] ]]
-    for i = 1, #items do
-        local itemArgs = items[i]
-        if type(itemArgs) ~= 'table' then
-            itemArgs = {
-                item = itemArgs,
-                text = tostring(itemArgs),
-            }
-        end
-
-        local item = listbox:addItem(itemArgs.text, itemArgs.item)
-        item.tooltip = itemArgs.tooltip
-        item.textColor = itemArgs.textColor
-        item.textColorDisabled = itemArgs.textColorDisabled
-        item.texture = itemArgs.texture
-        item.textureColor = itemArgs.textureColor
-        item.textureColorDisabled = itemArgs.textureColorDisabled
-    end
-
-    UI.init(listbox, args)
+    UI.initListBox(listbox, args)
     return listbox
 end
 
