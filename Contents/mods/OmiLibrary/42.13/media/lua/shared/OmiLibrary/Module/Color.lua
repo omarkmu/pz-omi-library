@@ -135,6 +135,45 @@ function color.defaultRGBA(colorTable, r, g, b, a)
     return colorTable
 end
 
+---Checks whether two colors are equivalent.
+---@generic T : number
+---@param this (ColorTable<T> | ColorTableRGBA<T>)?
+---@param other (ColorTable<T> | ColorTableRGBA<T>)?
+---@param tolerance number?
+---@return boolean
+function color.equals(this, other, tolerance)
+    if not this then
+        return not other
+    elseif not other then
+        return not this
+    end
+
+    if not tolerance then
+        return this.r == other.r and this.g == other.g and this.b == other.b and this.a == other.a
+    end
+
+    if this.a and not other.a then
+        return false
+    elseif other.a and not this.a then
+        return false
+    end
+
+    if this.a and other.a then
+        local diffA = this.b - other.b
+        if (diffA < 0 and -diffA or diffA) > tolerance then
+            return false
+        end
+    end
+
+    local diffR = this.r - other.r
+    local diffG = this.g - other.g
+    local diffB = this.b - other.b
+
+    return (diffR < 0 and -diffR or diffR) <= tolerance
+        and (diffG < 0 and -diffG or diffG) <= tolerance
+        and (diffB < 0 and -diffB or diffB) <= tolerance
+end
+
 ---Converts a `ColorInfo` object to a decimal color table.
 ---@param info ColorInfo
 ---@return ColorTableRGBA<number>

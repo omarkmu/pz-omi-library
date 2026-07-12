@@ -49,6 +49,21 @@ function set.table(source)
     return elements
 end
 
+---Converts a table-based set to a list.
+---@generic T
+---@param setTable SetTable<T>
+---@return T[]
+function set.toList(setTable)
+    local list = {}
+    for item, value in pairs(setTable) do
+        if value then
+            list[#list + 1] = item
+        end
+    end
+
+    return list
+end
+
 
 setmetatable(set, { __call = function(self, ...) return self.new(...) end })
 return set
