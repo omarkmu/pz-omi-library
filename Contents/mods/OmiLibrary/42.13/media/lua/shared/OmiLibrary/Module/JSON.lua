@@ -66,13 +66,11 @@ function json.tryRead(optionsOrFilename)
             return false, 'no reader or filename given'
         end
 
-        pcall(function()
-            if options.modId then
-                file = getModFileReader(options.modId, filename, options.create or false)
-            else
-                file = getFileReader(filename, options.create ~= false)
-            end
-        end)
+        if options.modId then
+            file = getModFileReader(options.modId, filename, options.create or false)
+        else
+            file = getFileReader(filename, options.create ~= false)
+        end
 
         if not file then
             return false, 'could not open file ' .. filename

@@ -45,7 +45,7 @@ describe('#module json #function', function()
         end)
 
         it('returns an error if the file could not be opened', function()
-            stub(_G, 'getFileReader', function() error('test error') end):auto_revert()
+            stub(_G, 'getFileReader'):auto_revert()
 
             local result, err = json.tryReadObject('unknown.json')
 

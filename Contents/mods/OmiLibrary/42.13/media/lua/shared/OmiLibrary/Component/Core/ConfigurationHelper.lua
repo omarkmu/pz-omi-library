@@ -159,13 +159,11 @@ function Configuration:saveFile()
         return false
     end
 
-    pcall(function()
-        local outFile = getFileWriter(filename, true, false)
-        if outFile then
-            outFile:write(encoded)
-            outFile:close()
-        end
-    end)
+    local outFile = getFileWriter(filename, true, false)
+    if outFile then
+        outFile:write(encoded)
+        outFile:close()
+    end
 
     self:_afterSaveFile()
     return true

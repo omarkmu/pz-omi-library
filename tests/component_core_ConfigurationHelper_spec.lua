@@ -166,7 +166,7 @@ describe('#component ConfigurationHelper', function()
             end)
 
             it('returns false when reading the file fails', function()
-                stub(_G, 'getFileReader', function() error('test error') end):auto_revert()
+                stub(_G, 'getFileReader'):auto_revert()
                 assert.is_false(instance:loadFile())
             end)
 
