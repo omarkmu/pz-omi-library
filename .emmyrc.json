@@ -1,5 +1,7 @@
 {
+    "diagnostics.disable": ["invert-if", "unnecessary-if"],
     "runtime.version": "Lua5.1",
     "runtime.requireLikeFunction": ["reload_module"],
-    "diagnostics.disable": ["unnecessary-if", "invert-if"]
+    "workspace.library": ["$PZ_UMBRELLA", "$PZ_ZOMBUSTED"],
+    "workspace.ignoreDir": ["Contents"]
 }
