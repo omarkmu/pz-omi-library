@@ -1,0 +1,114 @@
+#!/usr/bin/env bash
+# Helper for creating or removing symlinks within a Contents folder
+set -e
+
+REPO_ROOT=$(realpath $(dirname "$0")/.. --relative-to=$(pwd))
+SRC_PATH=$REPO_ROOT/src
+MOD_INFO_PATH=$SRC_PATH/version/mod.info
+
+function abort() {
+    >&2 echo "$1"
+    exit 1
+}
+
+function create_link() {
+    if [ -L "$2" ]; then
+        echo Skipping "$2", already a symlink
+    elif [ -d "$2" ]; then
+        echo Skipping "$2", exists as directory
+    else
+        ln -s $(realpath "$1") "$2"
+        echo "Created symlink at $2"
+    fi
+}
+
+function validate_directories() {
+    if [ ! -d $SRC_PATH ]; then
+        abort "src directory does not exist"
+    fi
+    if [ ! -f $MOD_INFO_PATH ]; then
+        abort "mod.info file does not exist"
+    fi
+}
+
+# defined MOD_ID, VERSION_MAX, VERSION_MIN
+function read_info() {
+    while IFS= read -r line; do
+        if [[ "$line" == id=* ]]; then
+            MOD_ID=${line#*id=}
+        elif [[ "$line" == versionMax=* ]]; then
+            VERSION_MAX=${line#*versionMax=}
+        elif [[ "$line" == versionMin=* ]]; then
+            VERSION_MIN=${line#*versionMin=}
+        fi
+    done < $MOD_INFO_PATH
+
+    if [[ "$MOD_ID" == "" ]]; then
+        abort "no id specified in mod.info"
+    elif [[ "$VERSION_MAX" == "" ]] && [[ "$VERSION_MIN" == "" ]]; then
+        abort "no version max or min specified in mod.info"
+    fi
+}
+
+# defines TARGET_VERSION
+function determine_target_version() {
+    if [[ -z "$VERSION_MAX" ]]; then
+        TARGET_VERSION=$VERSION_MIN
+    else
+        TARGET_VERSION=$VERSION_MAX
+    fi
+
+    TARGET_VERSION=$(echo "$TARGET_VERSION" | grep -Eo "^[0-9]+\\.[0-9]+") || abort "version field is incorrectly formatted"
+    if [ -d $SRC_PATH/$TARGET_VERSION ]; then
+        abort "src/$TARGET_VERSION directory exists, but this is the target version"
+    fi
+}
+
+function link_contents() {
+    # check for required directories
+    validate_directories
+
+    # determine target base directory & version subdirectory
+    read_info
+    TARGET_BASE=$REPO_ROOT/Contents/mods/$MOD_ID
+
+    # create links
+    for directory in $REPO_ROOT/src/*/; do
+        dirname=$(basename "$directory")
+
+        if [[ "$dirname" == "version" ]]; then
+            determine_target_version
+            create_link $directory $TARGET_BASE/$TARGET_VERSION
+            continue
+        fi
+
+        create_link $directory $TARGET_BASE/$dirname
+    done
+}
+
+function unlink_contents() {
+    # check for required directories
+    validate_directories
+
+    # get mod ID
+    read_info
+
+    TARGET_BASE=$REPO_ROOT/Contents/mods/$MOD_ID
+    if [ ! -d $TARGET_BASE ]; then
+        echo "$TARGET_BASE does not exist; no symlinks to remove"
+        exit
+    fi
+
+    for directory in $TARGET_BASE/*; do
+        if [[ -L "$directory" && -d "$directory" ]]; then
+            rm "$directory"
+            echo "Removed symlink at $directory"
+        fi
+    done
+}
+
+if [[ "$1" == "remove" ]]; then
+    unlink_contents
+else
+    link_contents
+fi

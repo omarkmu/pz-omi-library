@@ -6,9 +6,10 @@ return {
         helper = './tests/helpers/setup.lua',
         ROOT = { 'tests' },
         lpath = table.concat({
-            './Contents/mods/OmiLibrary/42.13/media/lua/shared/?.lua',
-            './Contents/mods/OmiLibrary/42.13/media/lua/client/?.lua',
-            './Contents/mods/OmiLibrary/42.13/media/lua/server/?.lua',
+            './src/version/media/lua/shared/?.lua',
+            './src/version/media/lua/client/?.lua',
+            './src/version/media/lua/server/?.lua',
+            './src/common/media/lua/shared/?.lua',
             './tests/?.lua',
         }, ';'),
     },
