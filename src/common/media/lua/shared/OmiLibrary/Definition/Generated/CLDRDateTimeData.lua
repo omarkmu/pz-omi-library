@@ -2109,10 +2109,15 @@ return function()
                 short = 'y/M/d',
             },
             timeFormats = { full = 'ah:mm:ss [zzzz]', long = 'ah:mm:ss [z]', medium = 'ah:mm:ss', short = 'ah:mm' },
-            dateTimeFormats = { full = '{1} {0}', long = '{1} {0}', medium = '{1} {0}', short = '{1} {0}' },
+            dateTimeFormats = {
+                full = '{1} {0}',
+                long = '{1} {0}',
+                medium = '{1} {0}',
+                short = '{1}' .. string.char(8201) .. '{0}' --[[{1} {0}]],
+            },
         },
         {
-            locales = { 'yue-Hans', 'yue-Hant-CN' },
+            locales = { 'yue-Hans' },
             dateFormats = {
                 full = 'y' .. string.char(24180) .. 'M' .. string.char(26376) .. 'd' .. string.char(26085) .. ' EEEE' --[[y年M月d日 EEEE]],
                 long = 'y' .. string.char(24180) .. 'M' .. string.char(26376) .. 'd' .. string.char(26085) --[[y年M月d日]],
@@ -2121,6 +2126,22 @@ return function()
             },
             timeFormats = { full = 'HH:mm:ss [zzzz]', long = 'HH:mm:ss [z]', medium = 'HH:mm:ss', short = 'HH:mm' },
             dateTimeFormats = { full = '{1} {0}', long = '{1} {0}', medium = '{1} {0}', short = '{1} {0}' },
+        },
+        {
+            locales = { 'yue-Hant-CN' },
+            dateFormats = {
+                full = 'y' .. string.char(24180) .. 'M' .. string.char(26376) .. 'd' .. string.char(26085) .. ' EEEE' --[[y年M月d日 EEEE]],
+                long = 'y' .. string.char(24180) .. 'M' .. string.char(26376) .. 'd' .. string.char(26085) --[[y年M月d日]],
+                medium = 'y' .. string.char(24180) .. 'M' .. string.char(26376) .. 'd' .. string.char(26085) --[[y年M月d日]],
+                short = 'y/M/d',
+            },
+            timeFormats = { full = 'HH:mm:ss [zzzz]', long = 'HH:mm:ss [z]', medium = 'HH:mm:ss', short = 'HH:mm' },
+            dateTimeFormats = {
+                full = '{1} {0}',
+                long = '{1} {0}',
+                medium = '{1} {0}',
+                short = '{1}' .. string.char(8201) .. '{0}' --[[{1} {0}]],
+            },
         },
         {
             locales = { 'zh' },
@@ -2175,7 +2196,12 @@ return function()
                 short = 'y/M/d',
             },
             timeFormats = { full = 'ah:mm:ss [zzzz]', long = 'ah:mm:ss [z]', medium = 'ah:mm:ss', short = 'ah:mm' },
-            dateTimeFormats = { full = '{1}{0}', long = '{1}{0}', medium = '{1}{0}', short = '{1}{0}' },
+            dateTimeFormats = {
+                full = '{1} {0}',
+                long = '{1} {0}',
+                medium = '{1} {0}',
+                short = '{1}' .. string.char(8201) .. '{0}' --[[{1} {0}]],
+            },
         },
         {
             locales = { 'zh-Hant-HK', 'zh-Hant-MO' },
@@ -2186,7 +2212,12 @@ return function()
                 short = 'd/M/y',
             },
             timeFormats = { full = 'ah:mm:ss [zzzz]', long = 'ah:mm:ss [z]', medium = 'ah:mm:ss', short = 'ah:mm' },
-            dateTimeFormats = { full = '{1}{0}', long = '{1}{0}', medium = '{1}{0}', short = '{1}{0}' },
+            dateTimeFormats = {
+                full = '{1} {0}',
+                long = '{1} {0}',
+                medium = '{1} {0}',
+                short = '{1}' .. string.char(8201) .. '{0}' --[[{1} {0}]],
+            },
         },
         {
             locales = { 'zh-Hant-MY' },
@@ -2197,7 +2228,12 @@ return function()
                 short = 'y/M/d',
             },
             timeFormats = { full = 'zzzz ah:mm:ss', long = 'z ah:mm:ss', medium = 'ah:mm:ss', short = 'ah:mm' },
-            dateTimeFormats = { full = '{1}{0}', long = '{1}{0}', medium = '{1}{0}', short = '{1}{0}' },
+            dateTimeFormats = {
+                full = '{1} {0}',
+                long = '{1} {0}',
+                medium = '{1} {0}',
+                short = '{1}' .. string.char(8201) .. '{0}' --[[{1} {0}]],
+            },
         },
     }
 end
