@@ -159,10 +159,9 @@ function Configuration:saveFile()
         return false
     end
 
-    local outFile = getFileWriter(filename, true, false)
-    if outFile then
-        outFile:write(encoded)
-        outFile:close()
+    if not core.writeFile(filename, encoded) then
+        self:_logWriteError('failed to write file')
+        return false
     end
 
     self:_afterSaveFile()
