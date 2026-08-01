@@ -343,8 +343,8 @@ end
 
 ---`onJoypadDown` handler for the text entry.
 ---@param entry ISTextEntryBox
----@param button integer
----@param joypadData table
+---@param button JoypadButton
+---@param joypadData JoypadData
 ---@protected
 function ColorEntry._onEntryJoypadDown(entry, button, joypadData)
     local parent = entry.parent ---@type ColorEntry?

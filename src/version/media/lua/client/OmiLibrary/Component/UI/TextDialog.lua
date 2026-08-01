@@ -79,7 +79,7 @@ function TextDialog:onClick(button)
 end
 
 ---Called when the down direction button is pressed on the joypad.
----@param joypadData table
+---@param joypadData JoypadData
 function TextDialog:onJoypadDirDown(joypadData)
     Dialog.onJoypadDirDown(self, joypadData)
     self:_showOnScreenKeyboard(joypadData)
@@ -300,7 +300,7 @@ function TextDialog:_initialiseChildren()
 end
 
 ---Shows an on screen keyboard for the joypad.
----@param joypadData table
+---@param joypadData JoypadData
 ---@protected
 function TextDialog:_showOnScreenKeyboard(joypadData)
     if not self.joyfocus then
@@ -316,7 +316,7 @@ function TextDialog:_showOnScreenKeyboard(joypadData)
         return
     end
 
-    local playerNum = joypadData.player
+    local playerNum = joypadData.player --[[@as integer]]
     local osk = OnScreenKeyboard.Show(playerNum, entry:getInternalEntry(), joypadData)
     if OnScreenKeyboard.instance then
         OnScreenKeyboard.instance.prevFocus = nil

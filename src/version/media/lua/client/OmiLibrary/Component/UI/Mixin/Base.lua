@@ -173,6 +173,6 @@ return Base
 ---@field anchorTop? boolean Whether the element's position should be anchored relative to the top of its parent.
 ---@field anchorBottom? boolean Whether the element's position should be anchored relative to the bottom of its parent.
 ---@field playerNum? integer The player number of the player who owns the element.
----@field joypadNavigate? table<string, ISUIElement?> Targets for joypad navigation.
+---@field joypadNavigate? umbrella.JoypadNavigate Targets for joypad navigation.
 
 --#endregion

@@ -1174,7 +1174,7 @@ end
 
 ---`onJoypadDown` handler for the text entry.
 ---@param entry ISTextEntryBox
----@param button integer
+---@param button JoypadButton
 ---@param joypadData JoypadData
 ---@protected
 function TextEntry._onEntryJoypadDown(entry, button, joypadData)
