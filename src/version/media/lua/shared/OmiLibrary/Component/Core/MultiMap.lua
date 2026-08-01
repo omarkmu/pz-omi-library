@@ -273,6 +273,10 @@ function MultiMap:new(...)
         if entryArray then
             for j = 1, #entryArray do
                 local entry = entryArray[j]
+                if entry[1] == nil or entry[2] == nil then
+                    error('Invalid entry at index ' .. j)
+                end
+
                 entries[#entries + 1] = entry
 
                 local mapEntries = map[entry[1]]
