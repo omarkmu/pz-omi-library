@@ -915,30 +915,13 @@ end
 ---@param content string
 ---@return boolean success
 function core.writeFile(filename, content)
-    local version = getCore():getGameVersion():getInt()
-    if version >= 42020 then
-        -- hopefully temporary workaround for .json
-        local outputStream = getFileOutput(filename)
-        if not outputStream then
-            return false
-        end
-
-        -- getFileOutput can return a wrapped null
-        pcall(function()
-            outputStream:writeChars(content)
-            outputStream:flush()
-        end)
-
-        endFileOutput()
-    else
-        local outFile = getFileWriter(filename, true, false)
-        if not outFile then
-            return false
-        end
-
-        outFile:write(content)
-        outFile:close()
+    local outFile = getFileWriter(filename, true, false)
+    if not outFile then
+        return false
     end
+
+    outFile:write(content)
+    outFile:close()
 
     return true
 end

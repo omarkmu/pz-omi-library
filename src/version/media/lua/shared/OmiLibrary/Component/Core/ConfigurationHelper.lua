@@ -92,9 +92,10 @@ function Configuration:loadDefaults()
 end
 
 ---Attempts to read configuration values from a `.json` file.
+---@param filename string? The filename to read from. Defaults to the configured filename.
 ---@return boolean success
-function Configuration:loadFile()
-    local filename = self:getFilename()
+function Configuration:loadFile(filename)
+    filename = filename or self:getFilename()
     if not filename then
         self:_logReadError('no filename specified')
         return false
@@ -142,9 +143,10 @@ function Configuration:loadModData()
 end
 
 ---Saves configuration values to a `.json` file.
+---@param filename string? The filename to save to. Defaults to the configured filename.
 ---@return boolean success
-function Configuration:saveFile()
-    local filename = self:getFilename()
+function Configuration:saveFile(filename)
+    filename = filename or self:getFilename()
     if not filename then
         self:_logWriteError('no filename specified')
         return false
