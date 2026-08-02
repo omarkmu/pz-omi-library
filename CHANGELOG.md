@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.3.0
+
+### Added
+- Added `targetSelf` parameter for functions with callbacks
+    - This is a shortcut for setting the `target` parameter to the created instance.
+- Added mod-specific L10N helpers to proxy tables
+- Added `UI.initListBox` function
+- Added `core.writeFile` function
+
+### Changed
+- Renamed `Topic` to `Channel` in dispatch module
+- Renamed files to reduce repeated `Core.lua` filenames
+- Moved files to `src` folder
+    - The expectation is that the Contents subfolders are symlinked for local development.
+- Updated to latest CLDR data
+- MultiMaps now throw an error when given an invalid entry table
+
+### Removed
+- Removed `core.getClassFieldByName` (relied on removed Reflection features)
+- Removed `l10n.setText` (relied on removed Reflection features)
+- Removed features related to mod ID backslash
+
 ## 0.2.0
 
 ### Added

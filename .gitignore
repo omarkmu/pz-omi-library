@@ -1,3 +1,9 @@
-.vscode
+# Mod content folder
+Contents/
+
+# Local VS Code settings
+.vscode/
+
+# Coverage report
 luacov.stats.out
 luacov.report.html

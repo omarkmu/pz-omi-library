@@ -2,7 +2,7 @@
 ---@using omi
 ---@diagnostic disable: access-invisible, duplicate-require
 
-local Topic = require 'OmiLibrary/Component/Dispatch/Topic'
+local Channel = require 'OmiLibrary/Component/Dispatch/Channel'
 local Dispatcher = require 'OmiLibrary/Component/Dispatch/Dispatcher'
 local Request = require 'OmiLibrary/Component/Dispatch/Request'
 local core = require 'OmiLibrary/Module/Utils'
@@ -21,7 +21,7 @@ end
 
 describe('#component Dispatcher', function()
     local dispatch ---@type Dispatcher
-    local topic ---@type Topic
+    local channel ---@type Channel
     local player ---@type IsoPlayer
 
     local _Request_send ---@type luassert.spy
@@ -30,7 +30,7 @@ describe('#component Dispatcher', function()
         _Request_send = spy.on(Request, 'send')
         player = zomboid.player()
         dispatch = Dispatcher:new({ module = 'modname' })
-        topic = dispatch:topic('TOPIC')
+        channel = dispatch:channel('CHANNEL')
     end)
 
     after_each(zomboid.revert)
@@ -53,11 +53,11 @@ describe('#component Dispatcher', function()
                 _onEvent = spy.on(Dispatcher, '_onEvent')
             end)
 
-            it('does not add the trigger if the topic is not part of the dispatcher', function()
+            it('does not add the trigger if the channel is not part of the dispatcher', function()
                 local otherDispatch = Dispatcher:new({ module = 'othermodname' })
-                local otherTopic = otherDispatch:topic('OTHER_TOPIC')
+                local otherChannel = otherDispatch:channel('OTHER_CHANNEL')
 
-                dispatch:addTrigger(otherTopic, dispatch.trigger.everyDay())
+                dispatch:addTrigger(otherChannel, dispatch.trigger.everyDay())
 
                 assert.spy(_triggerOnEvent).not_called()
             end)
@@ -71,7 +71,7 @@ describe('#component Dispatcher', function()
                 end)
 
                 it('calls the appropriate method', function()
-                    dispatch:addTrigger(topic, dispatch.trigger.onInterval(1000))
+                    dispatch:addTrigger(channel, dispatch.trigger.onInterval(1000))
 
                     assert.spy(_triggerOnInterval).called(1)
                 end)
@@ -79,8 +79,8 @@ describe('#component Dispatcher', function()
                 it('replaces an existing trigger', function()
                     zomboid.set_timestamp(0)
 
-                    dispatch:addTrigger(topic, dispatch.trigger.onInterval(1000))
-                    dispatch:addTrigger(topic, dispatch.trigger.onInterval(2000))
+                    dispatch:addTrigger(channel, dispatch.trigger.onInterval(1000))
+                    dispatch:addTrigger(channel, dispatch.trigger.onInterval(2000))
                     assert.spy(_triggerOnInterval).called(2)
 
                     zomboid.set_timestamp(1000)
@@ -106,20 +106,20 @@ describe('#component Dispatcher', function()
                     teardown(switchToClient)
 
                     it('does not add a trigger', function()
-                        dispatch:addTrigger(topic, dispatch.trigger.onPlayerDeath())
+                        dispatch:addTrigger(channel, dispatch.trigger.onPlayerDeath())
                         assert.same({}, dispatch._triggers)
                     end)
                 end)
 
                 it('calls the appropriate method', function()
-                    dispatch:addTrigger(topic, dispatch.trigger.onPlayerDeath())
+                    dispatch:addTrigger(channel, dispatch.trigger.onPlayerDeath())
 
                     assert.spy(_triggerOnPlayerDeath).called(1)
                 end)
 
                 it('replaces an existing trigger', function()
-                    dispatch:addTrigger(topic, dispatch.trigger.onPlayerDeath())
-                    dispatch:addTrigger(topic, dispatch.trigger.onPlayerDeath())
+                    dispatch:addTrigger(channel, dispatch.trigger.onPlayerDeath())
+                    dispatch:addTrigger(channel, dispatch.trigger.onPlayerDeath())
 
                     triggerEvent('OnPlayerDeath', player)
 
@@ -141,20 +141,20 @@ describe('#component Dispatcher', function()
                     teardown(switchToClient)
 
                     it('does not add a trigger', function()
-                        dispatch:addTrigger(topic, dispatch.trigger.onPlayerJoined())
+                        dispatch:addTrigger(channel, dispatch.trigger.onPlayerJoined())
                         assert.same({}, dispatch._triggers)
                     end)
                 end)
 
                 it('calls the appropriate method', function()
-                    dispatch:addTrigger(topic, dispatch.trigger.onPlayerJoined())
+                    dispatch:addTrigger(channel, dispatch.trigger.onPlayerJoined())
 
                     assert.spy(_triggerOnPlayerJoined).called(1)
                 end)
 
                 it('replaces an existing trigger', function()
-                    dispatch:addTrigger(topic, dispatch.trigger.onPlayerJoined())
-                    dispatch:addTrigger(topic, dispatch.trigger.onPlayerJoined())
+                    dispatch:addTrigger(channel, dispatch.trigger.onPlayerJoined())
+                    dispatch:addTrigger(channel, dispatch.trigger.onPlayerJoined())
 
                     triggerEvent('OnTick')
 
@@ -165,20 +165,20 @@ describe('#component Dispatcher', function()
 
             describe('when adding an EveryDay trigger', function()
                 it('calls the appropriate method', function()
-                    dispatch:addTrigger(topic, dispatch.trigger.everyDay())
+                    dispatch:addTrigger(channel, dispatch.trigger.everyDay())
 
                     assert.spy(_triggerOnEvent).called(1)
                     assert.spy(_triggerOnEvent).called_with(
                         match.ref(dispatch),
-                        match.ref(topic),
+                        match.ref(channel),
                         'EveryDay',
                         'EveryDays'
                     )
                 end)
 
                 it('replaces an existing trigger', function()
-                    dispatch:addTrigger(topic, dispatch.trigger.everyDay())
-                    dispatch:addTrigger(topic, dispatch.trigger.everyDay())
+                    dispatch:addTrigger(channel, dispatch.trigger.everyDay())
+                    dispatch:addTrigger(channel, dispatch.trigger.everyDay())
 
                     triggerEvent('EveryDays')
 
@@ -189,20 +189,20 @@ describe('#component Dispatcher', function()
 
             describe('when adding an EveryHour trigger', function()
                 it('calls the appropriate method', function()
-                    dispatch:addTrigger(topic, dispatch.trigger.everyHour())
+                    dispatch:addTrigger(channel, dispatch.trigger.everyHour())
 
                     assert.spy(_triggerOnEvent).called(1)
                     assert.spy(_triggerOnEvent).called_with(
                         match.ref(dispatch),
-                        match.ref(topic),
+                        match.ref(channel),
                         'EveryHour',
                         'EveryHours'
                     )
                 end)
 
                 it('replaces an existing trigger', function()
-                    dispatch:addTrigger(topic, dispatch.trigger.everyHour())
-                    dispatch:addTrigger(topic, dispatch.trigger.everyHour())
+                    dispatch:addTrigger(channel, dispatch.trigger.everyHour())
+                    dispatch:addTrigger(channel, dispatch.trigger.everyHour())
 
                     triggerEvent('EveryHours')
 
@@ -213,20 +213,20 @@ describe('#component Dispatcher', function()
 
             describe('when adding an EveryTenMinutes trigger', function()
                 it('calls the appropriate method', function()
-                    dispatch:addTrigger(topic, dispatch.trigger.everyTenMinutes())
+                    dispatch:addTrigger(channel, dispatch.trigger.everyTenMinutes())
 
                     assert.spy(_triggerOnEvent).called(1)
                     assert.spy(_triggerOnEvent).called_with(
                         match.ref(dispatch),
-                        match.ref(topic),
+                        match.ref(channel),
                         'EveryTenMinutes',
                         'EveryTenMinutes'
                     )
                 end)
 
                 it('replaces an existing trigger', function()
-                    dispatch:addTrigger(topic, dispatch.trigger.everyTenMinutes())
-                    dispatch:addTrigger(topic, dispatch.trigger.everyTenMinutes())
+                    dispatch:addTrigger(channel, dispatch.trigger.everyTenMinutes())
+                    dispatch:addTrigger(channel, dispatch.trigger.everyTenMinutes())
 
                     triggerEvent('EveryTenMinutes')
 
@@ -237,20 +237,20 @@ describe('#component Dispatcher', function()
 
             describe('when adding an EveryMinute trigger', function()
                 it('calls the appropriate method', function()
-                    dispatch:addTrigger(topic, dispatch.trigger.everyMinute())
+                    dispatch:addTrigger(channel, dispatch.trigger.everyMinute())
 
                     assert.spy(_triggerOnEvent).called(1)
                     assert.spy(_triggerOnEvent).called_with(
                         match.ref(dispatch),
-                        match.ref(topic),
+                        match.ref(channel),
                         'EveryMinute',
                         'EveryOneMinute'
                     )
                 end)
 
                 it('replaces an existing trigger', function()
-                    dispatch:addTrigger(topic, dispatch.trigger.everyMinute())
-                    dispatch:addTrigger(topic, dispatch.trigger.everyMinute())
+                    dispatch:addTrigger(channel, dispatch.trigger.everyMinute())
+                    dispatch:addTrigger(channel, dispatch.trigger.everyMinute())
 
                     triggerEvent('EveryOneMinute')
 
@@ -264,14 +264,14 @@ describe('#component Dispatcher', function()
                     local _log = spy.on(Dispatcher, 'log')
 
                     local trigger = { type = 'UNKNOWN', options = {} }
-                    dispatch:addTrigger(topic, trigger --[[@as Trigger]])
+                    dispatch:addTrigger(channel, trigger --[[@as Trigger]])
 
                     assert.spy(_log).called(1)
                     assert.spy(_log).called_with(
                         match.ref(dispatch),
                         'Ignoring unknown trigger %s for %s',
                         'UNKNOWN',
-                        match.ref(topic)
+                        match.ref(channel)
                     )
                 end)
             end)
@@ -281,7 +281,7 @@ describe('#component Dispatcher', function()
             describe('when used on the client', function()
                 it('throws an error', function()
                     assert.error(
-                        function() dispatch:broadcast(topic) end,
+                        function() dispatch:broadcast(channel) end,
                         'Dispatcher.broadcast cannot be used on the client'
                     )
                 end)
@@ -294,26 +294,26 @@ describe('#component Dispatcher', function()
                 it('sends a broadcast', function()
                     local _sendServerCommand = spy.on(_G, 'sendServerCommand')
 
-                    dispatch:broadcast(topic)
+                    dispatch:broadcast(channel)
                     assert.spy(_sendServerCommand).called(1)
-                    assert.spy(_sendServerCommand).called_with('modname', 'TOPIC', match.table())
+                    assert.spy(_sendServerCommand).called_with('modname', 'CHANNEL', match.table())
                 end)
 
                 it('does not attempt to send a cancelled request', function()
-                    topic = dispatch:topic('TOPIC', {
+                    channel = dispatch:channel('CHANNEL', {
                         onSend = function(req) req:cancel() end,
                     })
 
-                    dispatch:broadcast(topic)
+                    dispatch:broadcast(channel)
                     assert.spy(_Request_send).not_called()
                 end)
 
                 it('does not attempt to send an already sent request', function()
-                    topic = dispatch:topic('TOPIC', {
+                    channel = dispatch:channel('CHANNEL', {
                         onSend = function(req) req:send() end,
                     })
 
-                    dispatch:broadcast(topic)
+                    dispatch:broadcast(channel)
                     assert.spy(_Request_send).called(1)
                 end)
             end)
@@ -377,19 +377,19 @@ describe('#component Dispatcher', function()
             end)
         end)
 
-        describe('getModule', function()
-            it('returns the module name', function()
-                assert.equal('modname', dispatch:getModule())
+        describe('getChannel', function()
+            it('returns a channel', function()
+                assert.equal(channel, dispatch:getChannel('CHANNEL'))
+            end)
+
+            it('returns nil for an unknown channel', function()
+                assert.is_nil(dispatch:getChannel('UNKNOWN_CHANNEL'))
             end)
         end)
 
-        describe('getTopic', function()
-            it('returns a topic', function()
-                assert.equal(topic, dispatch:getTopic('TOPIC'))
-            end)
-
-            it('returns nil for an unknown topic', function()
-                assert.is_nil(dispatch:getTopic('UNKNOWN_TOPIC'))
+        describe('getModule', function()
+            it('returns the module name', function()
+                assert.equal('modname', dispatch:getModule())
             end)
         end)
 
@@ -423,7 +423,7 @@ describe('#component Dispatcher', function()
             describe('when used on the client', function()
                 it('throws an error', function()
                     assert.error(
-                        function() dispatch:toPlayer(topic, player) end,
+                        function() dispatch:toPlayer(channel, player) end,
                         'Dispatcher.toPlayer cannot be used on the client'
                     )
                 end)
@@ -436,26 +436,26 @@ describe('#component Dispatcher', function()
                 it('sends a server command to a player', function()
                     local _sendServerCommand = spy.on(_G, 'sendServerCommand')
 
-                    dispatch:toPlayer(topic, player)
+                    dispatch:toPlayer(channel, player)
                     assert.spy(_sendServerCommand).called(1)
-                    assert.spy(_sendServerCommand).called_with(match.ref(player), 'modname', 'TOPIC', match.table())
+                    assert.spy(_sendServerCommand).called_with(match.ref(player), 'modname', 'CHANNEL', match.table())
                 end)
 
                 it('does not attempt to send a cancelled request', function()
-                    topic = dispatch:topic('TOPIC', {
+                    channel = dispatch:channel('CHANNEL', {
                         onSend = function(req) req:cancel() end,
                     })
 
-                    dispatch:toPlayer(topic, player)
+                    dispatch:toPlayer(channel, player)
                     assert.spy(_Request_send).not_called()
                 end)
 
                 it('does not attempt to send an already sent request', function()
-                    topic = dispatch:topic('TOPIC', {
+                    channel = dispatch:channel('CHANNEL', {
                         onSend = function(req) req:send() end,
                     })
 
-                    dispatch:toPlayer(topic, player)
+                    dispatch:toPlayer(channel, player)
                     assert.spy(_Request_send).called(1)
                 end)
             end)
@@ -466,18 +466,18 @@ describe('#component Dispatcher', function()
                 it('sends a client command to the server', function()
                     local _sendClientCommand = spy.on(_G, 'sendClientCommand')
 
-                    dispatch:toServer(topic)
+                    dispatch:toServer(channel)
                     assert.spy(_sendClientCommand).called(1)
-                    assert.spy(_sendClientCommand).called_with('modname', 'TOPIC', match.table())
+                    assert.spy(_sendClientCommand).called_with('modname', 'CHANNEL', match.table())
                 end)
 
                 it('fails with a validation error when validation fails', function()
-                    topic = dispatch:topic('TOPIC', {
+                    channel = dispatch:channel('CHANNEL', {
                         onSend = function(req) req:send() end,
                         onValidate = function() return false end,
                     })
 
-                    local success, err = dispatch:toServer(topic)
+                    local success, err = dispatch:toServer(channel)
 
                     assert.is_false(success)
                     assert.equal('Validation failed', err)
@@ -487,7 +487,7 @@ describe('#component Dispatcher', function()
                 it('fails with an error when unable to determine a requesting player', function()
                     zomboid.revert_players()
 
-                    local success, err = dispatch:toServer(topic)
+                    local success, err = dispatch:toServer(channel)
 
                     assert.is_false(success)
                     assert.equal('Failed to get a player for sending the request', err)
@@ -495,20 +495,20 @@ describe('#component Dispatcher', function()
                 end)
 
                 it('does not attempt to send a cancelled request', function()
-                    topic = dispatch:topic('TOPIC', {
+                    channel = dispatch:channel('CHANNEL', {
                         onSend = function(req) req:cancel() end,
                     })
 
-                    dispatch:toServer(topic)
+                    dispatch:toServer(channel)
                     assert.spy(_Request_send).not_called()
                 end)
 
                 it('does not attempt to send an already sent request', function()
-                    topic = dispatch:topic('TOPIC', {
+                    channel = dispatch:channel('CHANNEL', {
                         onSend = function(req) req:send() end,
                     })
 
-                    dispatch:toServer(topic)
+                    dispatch:toServer(channel)
                     assert.spy(_Request_send).called(1)
                 end)
             end)
@@ -519,7 +519,7 @@ describe('#component Dispatcher', function()
 
                 it('throws an error', function()
                     assert.error(
-                        function() dispatch:toServer(topic) end,
+                        function() dispatch:toServer(channel) end,
                         'Dispatcher.toServer cannot be used on the server'
                     )
                 end)
@@ -547,7 +547,7 @@ describe('#component Dispatcher', function()
                 ['$__REPLY'] = true,
             }
 
-            triggerEvent('OnServerCommand', 'modname', 'TOPIC', args)
+            triggerEvent('OnServerCommand', 'modname', 'CHANNEL', args)
 
             assert.same({}, args)
         end)
@@ -555,36 +555,36 @@ describe('#component Dispatcher', function()
         describe('on the client', function()
             local _onClientReceive ---@type luassert.spy
             before_each(function()
-                _onClientReceive = spy.on(Topic, 'onClientReceive')
+                _onClientReceive = spy.on(Channel, 'onClientReceive')
             end)
 
-            it('passes the request to the topic', function()
-                triggerEvent('OnServerCommand', 'modname', 'TOPIC')
+            it('passes the request to the channel', function()
+                triggerEvent('OnServerCommand', 'modname', 'CHANNEL')
 
-                assert.spy(_onClientReceive).called_with(match.ref(topic), match.table())
+                assert.spy(_onClientReceive).called_with(match.ref(channel), match.table())
             end)
 
             it('ignores commands that do not match the module', function()
-                triggerEvent('OnServerCommand', 'othermodname', 'TOPIC')
+                triggerEvent('OnServerCommand', 'othermodname', 'CHANNEL')
 
                 assert.spy(_onClientReceive).not_called()
             end)
 
-            it('logs a message then ignores unknown topics', function()
-                triggerEvent('OnServerCommand', 'modname', 'UNKNOWN_TOPIC')
+            it('logs a message then ignores an unknown channel', function()
+                triggerEvent('OnServerCommand', 'modname', 'UNKNOWN_CHANNEL')
 
                 assert.spy(_onClientReceive).not_called()
                 assert.spy(_log).called_with(
                     match.ref(dispatch),
-                    'Ignoring request with unknown topic %q',
-                    'UNKNOWN_TOPIC'
+                    'Ignoring request on unknown channel %q',
+                    'UNKNOWN_CHANNEL'
                 )
             end)
 
             it('logs a message then ignores requests that fail the canReceive check', function()
                 stub(Request, 'canReceive', false, 'Not allowed'):auto_revert()
 
-                triggerEvent('OnServerCommand', 'modname', 'TOPIC')
+                triggerEvent('OnServerCommand', 'modname', 'CHANNEL')
 
                 assert.spy(_onClientReceive).not_called()
                 assert.spy(_log).called_with(
@@ -602,36 +602,36 @@ describe('#component Dispatcher', function()
 
             local _onServerReceive ---@type luassert.spy
             before_each(function()
-                _onServerReceive = spy.on(Topic, 'onServerReceive')
+                _onServerReceive = spy.on(Channel, 'onServerReceive')
             end)
 
-            it('passes the request to the topic', function()
-                triggerEvent('OnClientCommand', 'modname', 'TOPIC', {}, player)
+            it('passes the request to the channel', function()
+                triggerEvent('OnClientCommand', 'modname', 'CHANNEL', {}, player)
 
-                assert.spy(_onServerReceive).called_with(match.ref(topic), match.table())
+                assert.spy(_onServerReceive).called_with(match.ref(channel), match.table())
             end)
 
             it('ignores commands that do not match the module', function()
-                triggerEvent('OnClientCommand', 'othermodname', 'TOPIC', {}, player)
+                triggerEvent('OnClientCommand', 'othermodname', 'CHANNEL', {}, player)
 
                 assert.spy(_onServerReceive).not_called()
             end)
 
-            it('logs a message then ignores unknown topics', function()
-                triggerEvent('OnClientCommand', 'modname', 'UNKNOWN_TOPIC', {}, player)
+            it('logs a message then ignores an unknown channel', function()
+                triggerEvent('OnClientCommand', 'modname', 'UNKNOWN_CHANNEL', {}, player)
 
                 assert.spy(_onServerReceive).not_called()
                 assert.spy(_log).called_with(
                     match.ref(dispatch),
-                    'Ignoring request with unknown topic %q',
-                    'UNKNOWN_TOPIC'
+                    'Ignoring request on unknown channel %q',
+                    'UNKNOWN_CHANNEL'
                 )
             end)
 
             it('logs a message then ignores requests that fail the canReceive check', function()
                 stub(Request, 'canReceive', false, 'Not allowed'):auto_revert()
 
-                triggerEvent('OnClientCommand', 'modname', 'TOPIC', {}, player)
+                triggerEvent('OnClientCommand', 'modname', 'CHANNEL', {}, player)
 
                 assert.spy(_onServerReceive).not_called()
                 assert.spy(_log).called_with(
@@ -647,7 +647,7 @@ describe('#component Dispatcher', function()
     describe('does not throw an error', function()
         describe('when inappropriately activating', function()
             it('an Interval trigger', function()
-                dispatch:_onInterval(topic)
+                dispatch:_onInterval(channel)
             end)
 
             it('a PlayerDeath trigger', function()
@@ -665,7 +665,7 @@ describe('#component Dispatcher', function()
 
         it('when the player is not available in a PlayerJoined trigger', function()
             zomboid.revert_players()
-            dispatch:addTrigger(topic, dispatch.trigger.onPlayerJoined())
+            dispatch:addTrigger(channel, dispatch.trigger.onPlayerJoined())
             dispatch:_onPlayerJoinedCheck()
         end)
     end)

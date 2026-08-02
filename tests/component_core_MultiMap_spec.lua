@@ -14,6 +14,13 @@ describe('#component MultiMap', function()
         })
     end)
 
+    describe('#constructor', function()
+        it('throws an error for an invalid entry', function()
+            local entries = { {} } ---@type table
+            assert.error(function() MultiMap:new(entries) end)
+        end)
+    end)
+
     describe('#function', function()
         describe('fromList', function()
             it('creates a multimap from a list', function()

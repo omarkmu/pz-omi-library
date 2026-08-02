@@ -181,7 +181,7 @@ describe('#component Schema #method', function()
         end)
 
         it('returns nil and an error when reading a JSON file fails', function()
-            local _getFileReader = stub(_G, 'getFileReader', function() error('test error') end):auto_revert()
+            local _getFileReader = stub(_G, 'getFileReader'):auto_revert()
 
             local decoded, err = instance:readFile('table.json')
             assert.is_nil(decoded)

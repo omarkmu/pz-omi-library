@@ -8,15 +8,15 @@ local ServerRequest = require 'OmiLibrary/Component/Dispatch/ServerRequest'
 describe('#component ServerRequest', function()
     describe('#method', function()
         local dispatch ---@type Dispatcher
-        local topic ---@type Topic
+        local channel ---@type Channel
         setup(function()
             dispatch = Dispatcher:new({ module = 'modname' })
-            topic = dispatch:topic('TOPIC')
+            channel = dispatch:channel('CHANNEL')
         end)
 
         local req ---@type ServerRequest
         before_each(function()
-            req = ServerRequest:new({ topic = topic })
+            req = ServerRequest:new({ channel = channel })
         end)
 
         describe('isFromServer', function()
