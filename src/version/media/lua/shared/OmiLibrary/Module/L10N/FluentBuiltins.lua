@@ -168,11 +168,6 @@ function FUNCTION.GETTEXT(args, opts)
     local unwrapped = {}
     for i = 2, #args do
         unwrapped[i - 1] = tostring(args[i])
-
-        -- getText only supports up to 4 substitution variables
-        if i == 5 then
-            break
-        end
     end
 
     local default = opts.default
