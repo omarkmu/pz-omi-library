@@ -12,6 +12,11 @@ local setJoypadFocus = setJoypadFocus
 ---@class(partial) ui
 local UI = {}
 
+---Custom sandbox pages to inject into the UI.
+---@type Args.InjectSandboxPage[]
+---@private
+UI._customSandboxPages = {}
+
 ---Parser used to read rich text command attributes.
 UI.AttributeParser = require 'OmiLibrary/Component/UI/AttributeParser'
 
@@ -287,6 +292,12 @@ function UI.initListBox(element, args)
     end
 
     UI.init(element, args)
+end
+
+---Injects a page into the sandbox settings menu.
+---@param args Args.InjectSandboxPage
+function UI.injectSandboxPage(args)
+    UI._customSandboxPages[#UI._customSandboxPages + 1] = args
 end
 
 ---Creates and initializes a label element.
@@ -635,6 +646,11 @@ return UI
 
 ---@class Args.TooltipInv : Args.Tooltip.Shared
 ---@field item InventoryItem The item to use for the tooltip.
+
+---@class Args.InjectSandboxPage
+---@field name string The page name.
+---@field ui ISUIElement The class of the UI element to inject.
+---Must have a `new` function which takes `x`, `y`, `width`, and `height` arguments.
 
 ---@class InitArgs.Label : Args.Label, InitArgs.Shared
 
