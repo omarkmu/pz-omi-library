@@ -44,10 +44,13 @@ L10N._correctedLocaleTags = {
     AR = 'es-AR',
     CH = 'zh-Hant',
     CN = 'zh-Hans',
+    ES_CL = 'es-CL',
+    ES_MX = 'es-MX',
     JP = 'ja',
     PH = 'tl',
     UA = 'uk',
     PTBR = 'pt-BR',
+    STREW = 'x-strew',
 }
 
 ---The current game language.
