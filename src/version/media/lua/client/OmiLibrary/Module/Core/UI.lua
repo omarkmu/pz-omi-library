@@ -7,6 +7,7 @@ local Base = require 'OmiLibrary/Component/UI/Mixin/Base'
 local ISUIElement = ISUIElement
 local textManager = getTextManager()
 local setJoypadFocus = setJoypadFocus
+local gameCore = getCore()
 
 
 ---@class(partial) ui
@@ -16,6 +17,11 @@ local UI = {}
 ---@type Args.InjectSandboxPage[]
 ---@private
 UI._customSandboxPages = {}
+
+---Cached value of `getOptionFontSizeReal`.
+---@private
+UI._scale = gameCore:getOptionFontSizeReal()
+
 
 ---Parser used to read rich text command attributes.
 UI.AttributeParser = require 'OmiLibrary/Component/UI/AttributeParser'
@@ -191,6 +197,22 @@ function UI.dropdown(args)
 
     UI.init(dropdown, args)
     return dropdown
+end
+
+---Gets an integer from 1 to 5 representing the UI scale.
+---@return integer
+function UI.getScale()
+    return UI._scale
+end
+
+---Gets the height of the screen.
+function UI.getScreenHeight()
+    gameCore:getScreenHeight()
+end
+
+---Gets the width of the screen.
+function UI.getScreenWidth()
+    gameCore:getScreenWidth()
 end
 
 ---Gets the position for the center of the screen given a UI element's width and height.

@@ -10,6 +10,7 @@ local getTextManager = getTextManager
 local getTexture = getTexture
 local gameCore = getCore()
 local textManager = getTextManager()
+local uiScale = UI.getScale()
 
 
 ---Container for rich text commands.
@@ -489,7 +490,7 @@ function RichTextCommands.SPACE(panel, args)
     if panel.useContextSpacing then
         local lastChar = panel.lastChar or ''
         local font = textManager:getFontFromEnum(panel.font)
-        local fontDelta = panel.font == UIFont.NewSmall and 0 or 1
+        local fontDelta = panel.font == UIFont.NewSmall and 0 or uiScale
 
         local delta
         if lastChar ~= '' then
