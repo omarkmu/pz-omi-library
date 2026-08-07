@@ -43,6 +43,7 @@ RollResult._typesByName = {
 ---@type table<ExpressionType, string[]?>
 ---@protected
 RollResult._copyFields = {
+    Die = { 'values' },
     Dice = { 'values' },
     DiceSet = { 'values' },
     UnaryOp = { 'value' },
