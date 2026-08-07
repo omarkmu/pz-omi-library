@@ -877,58 +877,15 @@ function RichTextPanel:setText(text)
     self.text = text
 end
 
----Called every 100ms. Updates the tooltip for the current hover.
+---Called every 100ms.
 function RichTextPanel:update()
     core.callback.invoke(self.callbacks.onUpdate)
 
-    local hover = self.currentHover
-    local itemId = hover and hover.item
-    local text = hover and hover.text
-    local item = itemId and self.items[itemId] and self.items[itemId].item
-    if not text and not item then
-        if self.hoverTooltip then
-            self.hoverTooltip:setVisible(false)
-            self.hoverTooltip:removeFromUIManager()
-        end
-
-        return
+    if self.vscroll and self.vscroll.height ~= self.height then
+        self.vscroll:setHeight(self.height)
     end
 
-    if self.hoverTooltip then
-        local isMismatch = (item and self.hoverTooltip.Type ~= 'ISToolTipInv')
-            or (text and self.hoverTooltip.Type ~= 'ISToolTip')
-
-        if isMismatch then
-            self.hoverTooltip:setVisible(false)
-            self.hoverTooltip:removeFromUIManager()
-            self.hoverTooltip = nil
-        end
-    end
-
-    if not self.hoverTooltip then
-        if item then
-            self.hoverTooltip = UI.tooltipInv {
-                owner = self,
-                item = item,
-                alwaysOnTop = true,
-            }
-        else
-            self.hoverTooltip = UI.tooltip {
-                owner = self,
-                text = text,
-                alwaysOnTop = true,
-            }
-        end
-    elseif not self.hoverTooltip:isReallyVisible() then
-        self.hoverTooltip:addToUIManager()
-        self.hoverTooltip:setVisible(true)
-    end
-
-    if item then
-        self.hoverTooltip.item = item
-    elseif text then
-        self.hoverTooltip.description = text
-    end
+    self:_updateHoverTooltip()
 end
 
 
@@ -1468,6 +1425,59 @@ function RichTextPanel:_pushColor(color)
     self.rgbStack[#self.rgbStack + 1] = self.rgbCurrent
     self.rgb[self.currentLine] = color
     self.rgbCurrent = self.rgb[self.currentLine]
+end
+
+---Updates the tooltip for the current hover.
+---@protected
+function RichTextPanel:_updateHoverTooltip()
+    local hover = self.currentHover
+    local itemId = hover and hover.item
+    local text = hover and hover.text
+    local item = itemId and self.items[itemId] and self.items[itemId].item
+    if not text and not item then
+        if self.hoverTooltip then
+            self.hoverTooltip:setVisible(false)
+            self.hoverTooltip:removeFromUIManager()
+        end
+
+        return
+    end
+
+    if self.hoverTooltip then
+        local isMismatch = (item and self.hoverTooltip.Type ~= 'ISToolTipInv')
+            or (text and self.hoverTooltip.Type ~= 'ISToolTip')
+
+        if isMismatch then
+            self.hoverTooltip:setVisible(false)
+            self.hoverTooltip:removeFromUIManager()
+            self.hoverTooltip = nil
+        end
+    end
+
+    if not self.hoverTooltip then
+        if item then
+            self.hoverTooltip = UI.tooltipInv {
+                owner = self,
+                item = item,
+                alwaysOnTop = true,
+            }
+        else
+            self.hoverTooltip = UI.tooltip {
+                owner = self,
+                text = text,
+                alwaysOnTop = true,
+            }
+        end
+    elseif not self.hoverTooltip:isReallyVisible() then
+        self.hoverTooltip:addToUIManager()
+        self.hoverTooltip:setVisible(true)
+    end
+
+    if item then
+        self.hoverTooltip.item = item
+    elseif text then
+        self.hoverTooltip.description = text
+    end
 end
 
 
