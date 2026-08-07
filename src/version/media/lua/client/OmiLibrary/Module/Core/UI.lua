@@ -123,11 +123,6 @@ function UI.dialog(args, type, entryType)
         dialog:centerOnScreen()
     end
 
-    dialog:addToUIManager()
-    setJoypadFocus(playerNum, dialog)
-
-    UI.init(dialog, args)
-
     if args.setHeightToContents then
         if dialog:isRichText() and dialog.chatText then
             dialog.chatText:paginate()
@@ -140,6 +135,10 @@ function UI.dialog(args, type, entryType)
         end
     end
 
+    dialog:addToUIManager()
+    setJoypadFocus(playerNum, dialog)
+
+    UI.init(dialog, args)
     return dialog
 end
 

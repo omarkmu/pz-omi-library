@@ -436,7 +436,24 @@ function Dialog:_calcMinSize()
     local textW, textH = self:calcTextSize()
     local btnW, btnH = self.minBtnW, self.minBtnH
 
-    return max(textW, btnW), textH + btnH
+    local w = textW > btnW and textW or btnW
+    local h = textH + btnH
+
+    if self:getKeepOnScreen() then
+        local gameCore = getCore()
+        local screenWidth = gameCore:getScreenHeight()
+        local screenHeight = gameCore:getScreenHeight()
+
+        if w > screenWidth then
+            w = screenWidth
+        end
+
+        if h > screenHeight then
+            h = screenHeight - btnH
+        end
+    end
+
+    return w, h
 end
 
 ---Gets the row layout for buttons.
