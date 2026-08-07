@@ -216,6 +216,7 @@ function CheckboxGroup:new(args)
     local this = UI.new(self, CheckboxGroup.__base.new, x, y, w, h, '')
     this:_setBaseArgs(args)
 
+    this.keepOnScreen = false
     this.boxSize = args.boxSize or this.boxSize
     this.textGap = args.textGap or this.textGap
     this.leftMargin = args.marginLeft or this.leftMargin

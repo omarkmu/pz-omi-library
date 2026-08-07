@@ -427,6 +427,7 @@ function ListBox:new(args)
     this:_setBaseArgs(args)
 
     this.disabled = false
+    this.keepOnScreen = false
     this.doRepaintStencil = args.repaintStencil or false
     this.altBgColor = args.altBackgroundColor or this.altBgColor
     this.backgroundColor = args.backgroundColor or this.backgroundColor

@@ -316,6 +316,7 @@ function UI.label(args)
     local r, g, b, a = core.color.unpack(args.color or { r = 1, g = 1, b = 1, a = 1 })
 
     local label = ISLabel:new(x, y, h, args.text, r, g, b, a, args.font, left)
+    label.keepOnScreen = false ---@diagnostic disable-line: inject-field
     label.playerNum = args.playerNum or 0 ---@diagnostic disable-line: inject-field
     label.minimumWidth = args.minWidth or 0
     label.minimumHeight = args.minHeight or 0

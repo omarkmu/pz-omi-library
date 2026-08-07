@@ -61,6 +61,7 @@ function Dropdown:new(args)
     local this = UI.new(self, Dropdown.__base.new, x, y, w, h)
     this:_setBaseArgs(args)
 
+    this.keepOnScreen = false
     this.font = args.font or this.font
     this.noSelectionText = args.placeholderText
     this.image = args.image or this.image
