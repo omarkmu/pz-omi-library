@@ -1,5 +1,23 @@
 # Changelog
 
+# 0.4.0
+
+### Added
+- Added locale tag corrections for new languages
+- Added `utils.ui.injectSandboxPage`, for adding pages to the sandbox menu
+- Added support for now-unbounded `getText`
+- Added support for higher UI scales
+
+### Changed
+- Updated `json.tryRead` to always default `create` to false
+- Updated component UI types to default `keepOnScreen` to false
+- Updated `ConfigurationHelper:loadFile` to accept an options table as an argument
+
+### Fixed
+- Fixed rich text panel sometimes not including scrollbar
+- Fixed dialogs extending beyond screen size
+- Fixed Die objects failing to convert back from network tables
+
 ## 0.3.0
 
 ### Added
