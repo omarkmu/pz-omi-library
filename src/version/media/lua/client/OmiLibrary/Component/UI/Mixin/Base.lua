@@ -23,6 +23,7 @@ local min = math.min
 ---@field playerNum integer The player number of the owning player.
 ---@field joypadNavigate? table<string, ISUIElement?> Targets for joypad navigation.
 ---@field protected __base ISUIElement The base class.
+---@field keepOnScreen boolean? Flag for whether setX and setY should be limited to the screen size.
 local Base = core.extend({}, Destroyable)
 
 
@@ -154,6 +155,7 @@ function Base:_setBaseArgs(args)
     self.anchorTop = args.anchorTop ~= false
     self.anchorBottom = args.anchorBottom or false
     self.joypadNavigate = args.joypadNavigate and core.copy(args.joypadNavigate) or self.joypadNavigate
+    self.keepOnScreen = core.default(args.keepOnScreen, self.keepOnScreen)
 end
 
 
@@ -174,5 +176,6 @@ return Base
 ---@field anchorBottom? boolean Whether the element's position should be anchored relative to the bottom of its parent.
 ---@field playerNum? integer The player number of the player who owns the element.
 ---@field joypadNavigate? umbrella.JoypadNavigate Targets for joypad navigation.
+---@field keepOnScreen? boolean Flag for whether setX and setY should be limited to the screen size.
 
 --#endregion

@@ -22,14 +22,14 @@ PZLib.AccessLevel = function(_, playerNum)
 end
 
 ---Gets the translation with the given ID.
----Additional arguments up to 4 are passed as translation substitutions.
+---Additional arguments are passed as translation substitutions.
 ---@type fun(interpolator: Interpolator, id: any, ...: any): string
-PZLib.GetText = Helpers.argsToStrings(getText, 5)
+PZLib.GetText = Helpers.argsToStrings(getText)
 
 ---Gets the translation with the given ID. If the string is not found, returns `nil`.
----Additional arguments up to 4 are passed as translation substitutions.
+---Additional arguments are passed as translation substitutions.
 ---@type fun(interpolator: Interpolator, id: any, ...: any): string?
-PZLib.GetTextOrNull = Helpers.argsToStrings(getTextOrNull, 5)
+PZLib.GetTextOrNull = Helpers.argsToStrings(getTextOrNull)
 
 
 Libraries.pz = PZLib

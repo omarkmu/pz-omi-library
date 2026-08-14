@@ -159,6 +159,7 @@ function Button:new(args)
     local this = UI.new(self, Button.__base.new, x, y, w, h, text)
     this:_setBaseArgs(args)
 
+    this.keepOnScreen = false
     this.font = font
     this.tooltip = args.tooltip
     this.internal = args.internal

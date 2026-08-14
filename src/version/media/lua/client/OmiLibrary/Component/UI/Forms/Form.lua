@@ -211,7 +211,7 @@ function Form:createChildren()
         parent = self,
         x = 24,
         y = titleH + 20,
-        w = math.min(150, self.width * 0.25),
+        w = math.min(125 + 25 * UI.getScale(), self.width * 0.25),
         h = self.height - btnH - titleH - 40,
         drawBorder = true,
         anchorBottom = true,
@@ -1482,7 +1482,7 @@ function Form:new(args)
     this.titleFont = args.titleFont or UIFont.Large
     this.labelColor = core.copy(core.color.defaultRGBA(args.labelColor, 1, 1, 1, 1))
     this.labelColorDisabled = core.copy(core.color.defaultRGBA(args.labelColorDisabled, 0.5, 0.5, 0.5, this.labelColor.a))
-    this.controlWidth = args.controlWidth or 200
+    this.controlWidth = args.controlWidth or (this.width * 0.25)
     this.controlHeight = args.controlHeight or (textManager:getFontHeight(this.textFont) + 4)
     this.useFullWidthText = args.useFullWidthText ~= false
     this.useFullWidthList = args.useFullWidthList ~= false

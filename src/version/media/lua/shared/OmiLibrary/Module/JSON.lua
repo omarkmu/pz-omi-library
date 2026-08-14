@@ -69,7 +69,7 @@ function json.tryRead(optionsOrFilename)
         if options.modId then
             file = getModFileReader(options.modId, filename, options.create or false)
         else
-            file = getFileReader(filename, options.create ~= false)
+            file = getFileReader(filename, options.create or false)
         end
 
         if not file then
@@ -124,6 +124,6 @@ return json
 ---@field filename? string The filename to read. This assumes the file is in the Lua cache directory unless `modId` is given.
 ---@field modId? string The ID of the mod to read from.
 ---@field reader? BufferedReader The reader to use. If present, `filename` will be ignored.
----@field create? boolean Flag for whether the file should be created if not found. Defaults to `true` if `modId` is not given, `false` otherwise.
+---@field create? boolean Flag for whether the file should be created if not found. Defaults to `false`.
 
 --#endregion

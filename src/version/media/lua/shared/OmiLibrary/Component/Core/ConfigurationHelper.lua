@@ -92,16 +92,26 @@ function Configuration:loadDefaults()
 end
 
 ---Attempts to read configuration values from a `.json` file.
----@param filename string? The filename to read from. Defaults to the configured filename.
+---@param optionsOrFilename (Args.ReadJSON | string)? The filename to read from, or options for reading.
+---Defaults to the configured filename.
 ---@return boolean success
-function Configuration:loadFile(filename)
-    filename = filename or self:getFilename()
-    if not filename then
-        self:_logReadError('no filename specified')
-        return false
+function Configuration:loadFile(optionsOrFilename)
+    local options
+    if type(optionsOrFilename) == 'string' then
+        options = { filename = optionsOrFilename } --[[@as Args.ReadJSON]]
+    elseif optionsOrFilename then
+        options = optionsOrFilename
+    else
+        local filename = self:getFilename()
+        if not filename then
+            self:_logReadError('no filename specified')
+            return false
+        end
+
+        options = { filename = filename } --[[@as Args.ReadJSON]]
     end
 
-    local result, err = self:getSchema():readFile(filename, { dest = self:_getValues() })
+    local result, err = self:getSchema():readFile(options, { dest = self:_getValues() })
     if err then
         self:_logReadError(err)
     end

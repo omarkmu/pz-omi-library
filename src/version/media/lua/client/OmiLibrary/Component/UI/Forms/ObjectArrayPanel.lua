@@ -356,6 +356,7 @@ function ObjectArrayPanel:new(args)
         emptyText = args.emptyText or getText('OmiLibrary.form-empty'),
     }
 
+    this.keepOnScreen = false
     this.disabled = false
     this.background = false
     this.maxItems = args.maxItems

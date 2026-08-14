@@ -1330,6 +1330,7 @@ function TextEntry:new(args)
         placeholderColor = core.color.defaultRGBA(args.placeholderColor, 0.5, 0.5, 0.5, 1.0),
     }
 
+    this.keepOnScreen = false
     this.valid = true
     this.hasBeenFocused = false
     this.x = x
