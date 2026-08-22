@@ -19,6 +19,7 @@ local tonumber = tonumber
 local isServer = isServer
 local tostring = tostring
 local concat = table.concat
+local newarray = table.newarray
 local getmetatable = getmetatable
 local setmetatable = setmetatable
 local getOnlinePlayers = getOnlinePlayers
@@ -28,6 +29,7 @@ local getPlayerFromUsername = getPlayerFromUsername
 ---@class(partial) core
 ---@field private _activatedMods string[]? List of activated mod IDs.
 ---@field private _activatedModsSet SetTable<string>? Set of activated mod IDs.
+---@field private _gameVersion [integer, integer, integer]? The cached current game version.
 ---@field private _random Random? Shared `Random` instance.
 local core = {}
 
@@ -174,6 +176,41 @@ function core.clamp(value, minimum, maximum)
     end
 
     return value
+end
+
+---Compares the game version with the given version numbers.
+---
+---Returns 0 for an equal version,
+---1 if the given version is greater than the game version,
+---or -1 if the given version is less than the game version.
+---@param major integer The major version to use for comparison.
+---@param minor integer? The minor version to use for comparison. Defaults to `0`.
+---@param patch integer? The patch version to use for comparison. Defaults to `0`.
+---@return integer
+function core.compareGameVersion(major, minor, patch)
+    local gameMajor, gameMinor, gamePatch = core.getGameVersion()
+
+    if major > gameMajor then
+        return 1
+    elseif major < gameMajor then
+        return -1
+    end
+
+    minor = minor or 0
+    if minor > gameMinor then
+        return 1
+    elseif minor < gameMinor then
+        return -1
+    end
+
+    patch = patch or 0
+    if patch > gamePatch then
+        return 1
+    elseif patch < gamePatch then
+        return -1
+    end
+
+    return 0
 end
 
 ---Converts table elements to strings and concatenates.
@@ -404,6 +441,25 @@ function core.getEntityValue(entity)
     end
 
     return chr
+end
+
+---Gets the game version as three integers.
+---@return integer, integer, integer
+function core.getGameVersion()
+    local gameVersion = core._gameVersion
+    if not gameVersion then
+        local fullVersion = getCore():getVersion()
+        local version = GameVersion.parse(getCore():getVersion())
+
+        local major = version:getMajor()
+        local minor = version:getMinor()
+        local patch = tonumber(fullVersion:match('%.(%d+) '))
+
+        gameVersion = newarray({ major, minor, patch or 0 }) --[[@as [integer, integer, integer] ]]
+        core._gameVersion = gameVersion
+    end
+
+    return gameVersion[1], gameVersion[2], gameVersion[3]
 end
 
 ---Gets the line and column of an index in a string.

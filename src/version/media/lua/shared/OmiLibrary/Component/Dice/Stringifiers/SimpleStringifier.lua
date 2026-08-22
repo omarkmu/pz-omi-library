@@ -10,6 +10,7 @@ local format = string.format
 
 ---@class dice.SimpleStringifier : Stringifier
 ---@field protected _includeTotal boolean Flag for whether to include the total.
+---@field protected _includeValues boolean Flag for whether dice values should be included.
 ---@field protected _inDropped boolean Flag for whether the stringifier is currently in a dropped value.
 ---@field protected _doStrikethrough boolean Flag for whether dropped values should be indicated with a strikethrough.
 ---@field protected _listSeparator string The string to use for separating items in a list.
@@ -88,19 +89,20 @@ end
 ---@return string
 ---@protected
 function SimpleStringifier:_stringifyDice(expr)
-    local results = {}
+    local sides = expr.count ~= 1 and tostring(expr.count) or ''
+    local size = tostring(expr.size)
+    local ops = self:_stringifyOperations(expr.operations)
 
+    if not self._includeValues then
+        return format('%sd%s%s', sides, size, ops)
+    end
+
+    local results = {}
     for i = 1, #expr.values do
         results[#results + 1] = self:_stringify(expr.values[i])
     end
 
-    return format(
-        '%sd%s%s (%s)',
-        expr.count ~= 1 and tostring(expr.count) or '',
-        tostring(expr.size),
-        self:_stringifyOperations(expr.operations),
-        concat(results, self._listSeparator)
-    )
+    return format('%sd%s%s (%s)', sides, size, ops, concat(results, self._listSeparator))
 end
 
 ---Converts a die to a string.
@@ -237,6 +239,7 @@ function SimpleStringifier:new(args)
 
     this._inDropped = false
     this._includeTotal = args.includeTotal ~= false
+    this._includeValues = args.includeValues ~= false
     this._doStrikethrough = args.doStrikethrough ~= false
     this._listSeparator = ', '
 
@@ -252,5 +255,6 @@ return SimpleStringifier
 ---@field includeTotal boolean? Flag for whether to include the total. Defaults to `true`.
 ---@field doStrikethrough boolean? Flag for whether dropped values should be
 ---indicated with a strikethrough. Defaults to `true`.
+---@field includeValues boolean? Flag for whether dice values should be included. Defaults to `true`.
 
 --#endregion
