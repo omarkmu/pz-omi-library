@@ -1,6 +1,12 @@
 # Changelog
 
-# 0.4.0
+## 0.5.0
+
+### Added
+- Added utility functions for getting the current game version and comparing with it
+- Added flag to `SimpleStringifier` for whether the rolled value should be included
+
+## 0.4.0
 
 ### Added
 - Added locale tag corrections for new languages
